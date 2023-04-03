@@ -1,0 +1,21 @@
+try {
+	node (label:'selenium'){
+		stage ('Setup') {
+			helper = load "${env.WORKSPACE.split('@')[0]}@script/Jobs/Selenium/qcoecheckout.groovy"
+		}
+		stage ('Project Checkout'){		
+			echo "===accessing Team's repo  ==============="
+			
+				helper.checkout_product_repo()
+			 
+		}
+	}		
+	
+	}
+} catch(Exception ex) {
+	println(ex)
+	
+    currentBuild.result = 'FAILURE'
+} finally {
+	echo "===Done  ==============="
+}
