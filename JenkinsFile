@@ -14,13 +14,13 @@ try {
 		stage ('Test'){
 		
 		echo "===accessing Project reposs  ==============="	
-		/*try{
+		try{
 		 helper.executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
 		 }
 		 catch(Exception e){
 		 currentBuild.result = 'FAILURE'
 		 }
-		 */
+		 
 		}	
 		stage("Artifacts") {	
 			    echo "=======Artifacts stage ===="
@@ -32,10 +32,12 @@ try {
 		}
 		stage('EMail') {
 		echo "=======EMail stage ====${env.WORKSPACE}/JenkinsInfo.txt"
-		/*
+		File file = new File("JenkinsInfo.txt");
+		 String fileContent = file.text;
+		echo fileContent;
 		    def passed=helpers.getPassedTests();
 			helper.sendEmail(passed,failed,skipped,params.email_recipients);
-			*/
+			
 		}		                 
 	}
 		
