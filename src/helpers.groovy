@@ -9,7 +9,7 @@ def checkoutRepo(url,branch){
 		doGenerateSubmoduleConfigurations: false, 
 		extensions: [[$class: 'CleanCheckout']], 
 		submoduleCfg: [], 
-		userRemoteConfigs: [[credentialsId: 'bitbucket-svc1', url: "git@bitbucket.org:${url}"]]
+		userRemoteConfigs: [[credentialsId: 'bitbucket-svc1', url: "${url}"]]
 	])
 		
 }
