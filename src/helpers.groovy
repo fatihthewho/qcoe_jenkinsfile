@@ -53,7 +53,7 @@ def sendEmail(pass,fail,skipped,browser,environment,threads,timeTaken,emailRecip
              
 }
 def prepareEmailableReport(msg) {
-    echo ${msg};
+    echo "${msg}";
 	
 }
 def getFileContent(template) {
