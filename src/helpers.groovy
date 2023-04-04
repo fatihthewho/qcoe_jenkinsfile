@@ -82,8 +82,9 @@ def prepareEmailableReport(passed,failed,skipped) {
 	}
 	return emailTemplate
 }
-def getPassed(template) {
-	echo "${template}"
+def getFileContent(template) {
+	emailTemplate = readFile template;
+	return emailTemplate;
 
 }
 return this

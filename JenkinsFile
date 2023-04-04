@@ -35,8 +35,8 @@ try {
 	  		helper.updateXRayWithTestNG(params.test_plan_key);
 		}
 		stage('EMail') {
-		emailTemplate = readFile "${env.WORKSPACE}/JenkinsInfo.txt"
-		helper.getPassed(emailTemplate);
+		temp = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
+		echo "${temp}";
 		
 		}		                 
 	}
