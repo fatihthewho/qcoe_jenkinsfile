@@ -1,11 +1,11 @@
 try {
 	node (label:'selenium'){
 		stage ('Setup') {
-			helper = load "${env.WORKSPACE}/src/helpers.groovy"
+			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
 		}
 		
 		stage ('Project Checkout'){		
-			heler.info("Yay")
+			echo "===accessing Team's repo  ==============="
 			
 			 
 		}
