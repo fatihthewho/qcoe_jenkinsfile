@@ -1,7 +1,3 @@
-def passed="0";
-def failed="1";
-def skipped="2"
-def total="3";
 try {
 	node {
 		stage ('Setup') {
