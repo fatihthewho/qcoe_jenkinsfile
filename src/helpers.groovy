@@ -1,6 +1,6 @@
 
 def info(msg) {
-	echo "checking out ${msg}"
+	echo "MESSAGE : ${msg}"
 }
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
@@ -13,7 +13,6 @@ def checkoutRepo(url,branch){
 	])
 		
 }
-
 def archiveArtifacts() {
     archiveArtifacts "${PROJECT_LOCATION}/bin/${SLN_CONFIG}/logs/**/*.*"
     if(ARTIFACT_PATTERN.length()>0){
