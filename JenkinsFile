@@ -1,4 +1,4 @@
-
+def abc ="a"
 try {
 	node {
 		stage ('Setup') {
@@ -33,8 +33,13 @@ try {
 	  		helper.updateXRayWithTestNG(params.test_plan_key);
 		}
 		stage('EMail') {
-		temp = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
-		echo "${temp.split('\n')[0]}";	                 
+		abc = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
+		echo "${abc.split('\n')[0]}";	                 
+		}
+	}
+	node {
+		stage ('Email') {
+			echo "${abc.split('\n')[0]}";
 		}
 	}
 		
