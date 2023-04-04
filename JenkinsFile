@@ -7,9 +7,10 @@ try {
 	node("selenium"){
 		stage ('Checkout'){	
 			echo "===accessing Team's repo  ==============="		
-			helper.checkoutRepo("https://bitbucket.org/insightsoftware-qcoe/qcoe_java_web_api","master")
-			
-			
+			helper.checkoutRepo("https://bitbucket.org/insightsoftware-qcoe/qcoe_java_web_api","master")			
+		}
+		stage ('Build'){	
+			bat 'mvn clean compile'			
 		}
 	}
 		

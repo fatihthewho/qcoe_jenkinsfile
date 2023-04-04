@@ -14,4 +14,14 @@ def checkoutRepo(url,branch){
 		
 }
 
+def archiveArtifacts() {
+    archiveArtifacts "${PROJECT_LOCATION}/bin/${SLN_CONFIG}/logs/**/*.*"
+    if(ARTIFACT_PATTERN.length()>0){
+        for(artifactPath in ARTIFACT_PATTERN.split(';')){
+            artifactFileName = artifactPath.tokenize('\\').last()
+            projectDirNoSlash = "${PROJECT_LOCATION}".substring(1,"${PROJECT_LOCATION}".length())
+            archiveArtifacts "${projectDirNoSlash}/bin/${SLN_CONFIG}/${artifactFileName}"
+        }
+    }
+}
 return this
