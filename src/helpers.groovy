@@ -48,11 +48,11 @@ def updateXRayWithTestNG(testPlan) {
 def sendEmail(emailRecipients) {
  echo "${EMAIL_INFO}"
    if ("${emailRecipients}" != 'NA' ){
-	  String[] str;
+	  
       str = ${EMAIL_INFO.split('\n')};
       
-      for( String values : str )
-      println(values);
+      for( element in str )
+      println(element);
 
 	   /*echo "${lines}"
 	  	for (element in lines) {
