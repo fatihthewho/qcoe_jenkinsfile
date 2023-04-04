@@ -52,7 +52,7 @@ def sendEmail(emailRecipients) {
       str = "${EMAIL_INFO.split('\n')}";
       
       
-      println(${str[0]});
+      echo "${str[0]}";
 
 	   /*echo "${lines}"
 	  	for (element in lines) {
