@@ -2,7 +2,6 @@ try {
 	node {
 		stage ('Setup') {
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
-			helper.info("mvn test -DthreadCount=%no_of_parallel_threads% -Dremote=%use_selenium_grid% -DBrowser=%browser% -Denv=%environment% -Dretry=%no_of_retries% -DsuiteFile=testngsuites/%test_suite_file%")
 		}
 	node("selenium"){
 		stage ('Checkout'){	
@@ -14,7 +13,9 @@ try {
 		}
 		stage ('Test'){ 
 			try{
-				bat 'mvn test -DthreadCount=%no_of_parallel_threads% -Dremote=%use_selenium_grid% -DBrowser=%browser% -Denv=%environment% -Dretry=%no_of_retries% -DsuiteFile=testngsuites/%test_suite_file%'
+			echo "===exeucuting tests ==============="
+			 helper.executeMavenTests(%no_of_parallel_threads%,%use_selenium_grid%,%browser% , %environment% ,%no_of_retries% , %test_suite_file%)
+				
 			}
 			catch(Exception ex)	{
 				println(ex)					
