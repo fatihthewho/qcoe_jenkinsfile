@@ -29,11 +29,12 @@ try {
 			} */
 			stage('XRay') {
 				echo "=======XRay stage ===="
+				EMAIL_INFO = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
 				helper.updateXRayWithTestNG(params.test_plan_key);
 			}
 		}
 		stage ('Email') {
-		   EMAIL_INFO = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
+
 			helper.sendEmail(params.email_recipients);
 		}
 		
