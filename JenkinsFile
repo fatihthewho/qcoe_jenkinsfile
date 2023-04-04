@@ -1,14 +1,17 @@
 try {
-	node (label:'selenium'){
+	node {
 		stage ('Setup') {
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
+			helper.info("Yay")
 		}
-		
-		stage ('Project Checkout'){		
+	node("selenium"){
+		stage ('Checkout'){		
+			helper.checkoutRepo("ranorex")
 			echo "===accessing Team's repo  ==============="
 			
-			 
 		}
+	}
+		
 	}		
 	
 } catch(Exception ex) {
