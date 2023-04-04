@@ -1,7 +1,6 @@
 #!/bin/groovy
 try {
 	node
-	def te ="asd"
 	{
 		stage ('Setup') {
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
@@ -32,13 +31,13 @@ try {
 			} */
 			stage('XRay') {
 				echo "=======XRay stage ===="
-				EMAIL_INFO = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
-				helper.updateXRayWithTestNG(params.test_plan_key);
+				EMAIL_INFO = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
+				helper.updateXRayWithTestNG(params.test_plan_key)
 			}
 		}
 		stage ('Email') {
 
-			helper.sendEmail(params.email_recipients,"${EMAIL_INFO}");
+			helper.sendEmail(params.email_recipients,"${EMAIL_INFO}")
 		}
 
 	}
