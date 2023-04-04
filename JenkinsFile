@@ -32,7 +32,8 @@ try {
 		}
 		stage('EMail') {
 		temp = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
-		echo "${temp}";
+		
+		echo "${temp.split('\n')[0]}";
 		
 		}		                 
 	}
