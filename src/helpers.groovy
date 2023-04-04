@@ -1,6 +1,6 @@
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
-TOTAL_TIME = "temp"
+EMAIL_INFO = "temp"
 def info(msg) {
 	echo "MESSAGE : ${msg}"
 }
@@ -45,14 +45,45 @@ def updateXRayWithTestNG(testPlan) {
 			)
 	}
 }
-def sendEmail(pass,fail,skipped,browser,environment,threads,timeTaken,emailRecipients) {
+def sendEmail(emailRecipients) {
+
    if ("${emailRecipients}" != 'NA' ){
+      lines = ${EMAIL_INFO.split('\n')};
+	  	for (element in lines) {
+		    echo " boom : ${element}"
+			temp = "${element.split('=')[0]};
+			echo "${temp}"
+		    try {
+			     switch(temp) {
+					case "tests_total":
+					echo "total : ${element.split('=')[1]}";
+					break;
+					case "tests_passed":
+					echo "passed : ${element.split('=')[1]}";
+					break;
+					case "tests_failed":
+					echo "failed : ${element.split('=')[1]}";
+					break;
+					case "tests_skipped":
+					echo "skipped: ${element.split('=')[1]}";
+					break;
+				    default:
+					echo "YAYYYYYYYY";
+					break
+				} 
+			}catch(Exception err) {
+				echo "${err}"
+			}
+		}
+	
+	}
+
    
-	  emailext body: '${FILE,path="__test-results/email-report.html"}', mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '${email_recipients}'
-   }
+	  /*emailext body: '${FILE,path="__test-results/email-report.html"}', mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '${email_recipients}'*/
+   
              
 }
-def prepareEmailableReport(vari) {
+def prepareEmailableReport() {
 echo "Test: ${TOTAL_TIME}";
     echo "Test: ${vari}";
 	

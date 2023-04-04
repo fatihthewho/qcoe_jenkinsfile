@@ -23,19 +23,19 @@ try {
 			 
 			}	
 			stage("Artifacts") {	
-					echo "=======Artifacts stage ===="
-					helper.archiveJavaArtifacts();				
+				echo "=======Artifacts stage ===="
+				helper.archiveJavaArtifacts();
+				EMAIL_INFO = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");					
 			}
 			stage('XRay') {
 				echo "=======XRay stage ===="
 				helper.updateXRayWithTestNG(params.test_plan_key);
 			}
-			stage('EMail') {
-			TOTAL_TIME = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
-			echo "${TOTAL_TIME.split('\n')[0]}";	
-			helper.prepareEmailableReport("${TOTAL_TIME}");
-			}
 		}
+		stage ('Email') {
+			helper.sendEmail(params.email-recipients);
+		}
+		
 	}		
 		
 	
