@@ -4,6 +4,7 @@ try {
 		stage ('Setup') {
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
 		}
+	}
 	node("selenium"){
 		stage ('Checkout'){	
 			echo "===accessing Project repo  ==============="		
@@ -34,9 +35,10 @@ try {
 		stage('EMail') {
 		temp = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
 		echo "${temp.split('\n')[0]}";	                 
+		}
 	}
 		
-	}		
+		
 	
 } catch(Exception ex) {
 	println(ex)	
