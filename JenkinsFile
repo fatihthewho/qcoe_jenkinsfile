@@ -35,8 +35,6 @@ try {
 		File file = new File("JenkinsInfo.txt");
 		 String fileContent = file.text;
 		echo fileContent;
-		    def passed=helpers.getPassedTests();
-			helper.sendEmail(passed,failed,skipped,params.email_recipients);
 			
 		}		                 
 	}
