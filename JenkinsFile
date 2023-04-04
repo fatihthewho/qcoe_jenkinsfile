@@ -8,7 +8,7 @@ try {
 		node("selenium"){
 			stage ('Checkout'){
 				echo "===accessing Project repo  ==============="
-				helper.checkoutRepo(params.repo_url,params.branch)
+				helper.checkoutRepo("https://bitbucket.org/insightsoftware-qcoe/qcoe_jenkins","qcoe")
 			}
 			/* stage ('Build'){
 				bat 'mvn clean compile'
