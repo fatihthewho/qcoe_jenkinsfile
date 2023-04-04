@@ -33,7 +33,7 @@ try {
 			}
 		}
 		stage ('Email') {
-			helper.sendEmail(params.email-recipients);
+			helper.sendEmail(params.email_recipients);
 		}
 		
 	}		
