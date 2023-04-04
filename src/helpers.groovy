@@ -23,7 +23,7 @@ def archiveJavaArtifacts() {
 	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: '__test-results',reportFiles: 'Report.html',reportName: 'Test Summary',reportTitles: ''])
             
 }
-def updateXRayWithTestNG(project,testPlan) {
+def updateXRayWithTestNG(testPlan) {
 	if ("${testPlan}" != 'NA' ){
 			step(
 			[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: '''{

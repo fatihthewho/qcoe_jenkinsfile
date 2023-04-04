@@ -24,8 +24,8 @@ try {
 	  			helper.archiveJavaArtifacts();				
 		}
 		stage('XRay') {
-				echo "=======XRay stage ===="
-	  			helper.updateXRayWithTestNG(params.test_plan_key);
+			echo "=======XRay stage ===="
+	  		helper.updateXRayWithTestNG(params.test_plan_key);
 		}
 		stage('EMail') {
 		echo "=======EMail stage ===="
