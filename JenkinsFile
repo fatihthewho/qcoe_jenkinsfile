@@ -5,7 +5,7 @@ try {
 		}
 		
 		stage ('Project Checkout'){		
-			heler.info("Yay"
+			heler.info("Yay")
 			
 			 
 		}
