@@ -32,10 +32,9 @@ try {
 		}
 		stage('EMail') {
 		echo "=======EMail stage ====${env.WORKSPACE}/JenkinsInfo.txt"
-		File file = new File("JenkinsInfo.txt");
-		 String fileContent = file.text;
-		echo fileContent;
-			
+		def version = readFile "${env.WORKSPACE}/JenkinsInfo.txt"
+		echo ${version};
+		
 		}		                 
 	}
 		
