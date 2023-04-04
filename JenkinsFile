@@ -14,9 +14,8 @@ try {
 		stage ('Test'){ 
 			try{
 			echo "===accessing Project repo  ==============="	
-			echo "${no_of_parallel_threads}"	
-			echo  params.use_selenium_grid
-			 helper.executeMavenTests("${no_of_parallel_threads}", "${use_selenium_grid}", "${browser}", "${environment}", "${no_of_retries}", "${test_suite_file}")
+			echo "${no_of_parallel_threads}"
+			 helper.executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
 			}
 			catch(Exception ex)	{
 				println(ex)					
