@@ -1,3 +1,7 @@
+def passed="0";
+def failed="1";
+def skipped="2"
+def total="3";
 try {
 	node {
 		stage ('Setup') {
@@ -31,8 +35,8 @@ try {
 	  		helper.updateXRayWithTestNG(params.test_plan_key);
 		}
 		stage('EMail') {
-		
-		helper.compileTemplate("${env.WORKSPACE}/JenkinsInfo.txt");
+		emailTemplate = readFile "${env.WORKSPACE}/JenkinsInfo.txt"
+		helper.getPassed(emailTemplate);
 		
 		}		                 
 	}
