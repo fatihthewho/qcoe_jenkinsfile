@@ -49,10 +49,10 @@ def sendEmail(emailRecipients) {
  echo "${EMAIL_INFO}"
    if ("${emailRecipients}" != 'NA' ){
 	  
-      str = "${EMAIL_INFO.split('\n')[0]}";
+      str[] = "${EMAIL_INFO.split('\n')}";
       
       
-      echo "${str}";
+      echo "${str[0]}";
 
 	   /*echo "${lines}"
 	  	for (element in lines) {
