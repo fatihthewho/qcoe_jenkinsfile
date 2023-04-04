@@ -33,7 +33,7 @@ try {
 			stage('EMail') {
 			TOTAL_TIME = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
 			echo "${TOTAL_TIME.split('\n')[0]}";	
-			helper.prepareEmailableReport(${TOTAL_TIME});
+			helper.prepareEmailableReport("${TOTAL_TIME}");
 			}
 		}
 	}		

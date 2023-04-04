@@ -52,8 +52,9 @@ def sendEmail(pass,fail,skipped,browser,environment,threads,timeTaken,emailRecip
    }
              
 }
-def prepareEmailableReport(msg) {
-    echo "${msg}";
+def prepareEmailableReport(vari) {
+echo "Test: ${TOTAL_TIME}";
+    echo "Test: ${vari}";
 	
 }
 def getFileContent(template) {
