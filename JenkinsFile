@@ -31,9 +31,8 @@ try {
 	  		helper.updateXRayWithTestNG(params.test_plan_key);
 		}
 		stage('EMail') {
-		echo "=======EMail stage ====${env.WORKSPACE}/JenkinsInfo.txt"
-		def version = readFile "${env.WORKSPACE}/JenkinsInfo.txt"
-		echo ${version};
+		
+		helper.compileTemplate("${env.WORKSPACE}/JenkinsInfo.txt");
 		
 		}		                 
 	}
