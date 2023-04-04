@@ -8,9 +8,9 @@ try {
 				echo "===accessing Project repo  ==============="		
 				helper.checkoutRepo(params.repo_url,params.branch)			
 			}
-			stage ('Build'){	
+			/* stage ('Build'){
 				bat 'mvn clean compile'			
-			}
+			} */
 			stage ('Test'){
 			
 			echo "===accessing Project reposs  ==============="	
@@ -22,17 +22,18 @@ try {
 			 }*/
 			 
 			}	
-			stage("Artifacts") {	
+			/* stage("Artifacts") {
 				echo "=======Artifacts stage ===="
 				helper.archiveJavaArtifacts();
-				EMAIL_INFO = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");					
-			}
+
+			} */
 			stage('XRay') {
 				echo "=======XRay stage ===="
 				helper.updateXRayWithTestNG(params.test_plan_key);
 			}
 		}
 		stage ('Email') {
+		   EMAIL_INFO = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
 			helper.sendEmail(params.email_recipients);
 		}
 		
