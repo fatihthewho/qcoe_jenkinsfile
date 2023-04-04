@@ -14,6 +14,8 @@ def checkoutRepo(url,branch){
 		
 }
 def executeMavenTests(threads,isRemote,browser,environment,retries,xmlFileName) {
+  echo "MESSAGE: ${threads} "
+  echo ${threads}
     bat 'mvn test -DthreadCount=${threads} -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}'
 }
 def archiveArtifacts() {
