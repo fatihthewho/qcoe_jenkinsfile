@@ -13,11 +13,14 @@ try {
 		}
 		stage ('Test'){
 		try{
+		echo "===accessing Project reposs  ==============="	
+		/*
 		 helper.executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
 		 }
 		 catch(Exception e){
 		 currentBuild.result = 'FAILURE'
 		 }
+		 */
 		}	
 		stage("Artifacts") {	
 			    echo "=======Artifacts stage ===="
@@ -28,8 +31,11 @@ try {
 	  		helper.updateXRayWithTestNG(params.test_plan_key);
 		}
 		stage('EMail') {
-		echo "=======EMail stage ===="
-			helper.sendEmail(params.email_recipients);
+		echo "=======EMail stage ====${env.WORKSPACE}/JenkinsInfo.txt"
+		/*
+		    def passed=helpers.getPassedTests();
+			helper.sendEmail(passed,failed,skipped,params.email_recipients);
+			*/
 		}		                 
 	}
 		

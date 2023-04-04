@@ -43,7 +43,7 @@ def updateXRayWithTestNG(testPlan) {
 			)
 	}
 }
-def sendEmail(emailRecipients) {
+def sendEmail(pass,fail,skipped,browser,environment,threads,timeTaken,emailRecipients) {
    if ("${emailRecipients}" != 'NA' ){
 	  emailext body: '${FILE,path="__test-results/email-report.html"}', mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '${email_recipients}'
    }
