@@ -46,9 +46,10 @@ def updateXRayWithTestNG(testPlan) {
 	}
 }
 def sendEmail(emailRecipients) {
-
+ echo "${EMAIL_INFO}"
    if ("${emailRecipients}" != 'NA' ){
-      lines = ${EMAIL_INFO.split('\n')};
+       lines = "${EMAIL_INFO.split('\n')}";
+	   echo "${lines}"
 	  	for (element in lines) {
 		    echo " boom : ${element}"
 			temp = "${element.split('=')[0]};
