@@ -1,4 +1,3 @@
-def abc ="a"
 try {
 	node {
 		stage ('Setup') {
