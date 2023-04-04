@@ -4,45 +4,40 @@ try {
 		stage ('Setup') {
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
 		}
-	}
-	node("selenium"){
-		stage ('Checkout'){	
-			echo "===accessing Project repo  ==============="		
-			helper.checkoutRepo(params.repo_url,params.branch)			
+		node("selenium"){
+			stage ('Checkout'){	
+				echo "===accessing Project repo  ==============="		
+				helper.checkoutRepo(params.repo_url,params.branch)			
+			}
+			stage ('Build'){	
+				bat 'mvn clean compile'			
+			}
+			stage ('Test'){
+			
+			echo "===accessing Project reposs  ==============="	
+			/*try{
+			 helper.executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
+			 }
+			 catch(Exception e){
+			 currentBuild.result = 'FAILURE'
+			 }*/
+			 
+			}	
+			stage("Artifacts") {	
+					echo "=======Artifacts stage ===="
+					helper.archiveJavaArtifacts();				
+			}
+			stage('XRay') {
+				echo "=======XRay stage ===="
+				helper.updateXRayWithTestNG(params.test_plan_key);
+			}
+			stage('EMail') {
+			TOTAL_TIME = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
+			echo "${TOTAL_TIME.split('\n')[0]}";	
+			helper.prepareEmailableReport(TOTAL_TIME);
+			}
 		}
-		stage ('Build'){	
-			bat 'mvn clean compile'			
-		}
-		stage ('Test'){
-		
-		echo "===accessing Project reposs  ==============="	
-		/*try{
-		 helper.executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
-		 }
-		 catch(Exception e){
-		 currentBuild.result = 'FAILURE'
-		 }*/
-		 
-		}	
-		stage("Artifacts") {	
-			    echo "=======Artifacts stage ===="
-	  			helper.archiveJavaArtifacts();				
-		}
-		stage('XRay') {
-			echo "=======XRay stage ===="
-	  		helper.updateXRayWithTestNG(params.test_plan_key);
-		}
-		stage('EMail') {
-		abc = helper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt");
-		echo "${abc.split('\n')[0]}";	                 
-		}
-	}
-	node {
-		stage ('Email') {
-			echo "${abc.split('\n')[0]}";
-		}
-	}
-		
+	}		
 		
 	
 } catch(Exception ex) {

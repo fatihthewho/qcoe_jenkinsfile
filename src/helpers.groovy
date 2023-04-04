@@ -1,4 +1,6 @@
-
+import groovy.json.JsonSlurperClassic
+import groovy.json.JsonOutput
+TOTAL_TIME = "temp"
 def info(msg) {
 	echo "MESSAGE : ${msg}"
 }
@@ -50,37 +52,9 @@ def sendEmail(pass,fail,skipped,browser,environment,threads,timeTaken,emailRecip
    }
              
 }
-def prepareEmailableReport(passed,failed,skipped) {
-	emailTemplate = readFile template
-	try {
-		for (element in varMap) {
-		    echo "${element.key} ${element.value}"
-		    try {
-			    if(element != null && element.value != null) {
-				    emailTemplate = emailTemplate.replace("{{" + element.key + "}}", element.value.toString())
-				} else {
-					emailTemplate = emailTemplate.replace("{{" + element.key + "}}", "UNDEFINED")
-				} 
-			} catch(Exception err) {
-				echo "${err}"
-			}
-		}
-		now = new Date()
-		stamp = now.format("MM/dd/yyyy", TimeZone.getTimeZone('UTC'))
-		emailTemplate = emailTemplate.replace("{{DATE}}", stamp)
-		emailTemplate = emailTemplate.replace("{{BUILD_NUMBER}}", BUILD_DISPLAY_NAME)
-		emailTemplate = emailTemplate.replace("{{BUILD_URL}}", BUILD_URL)
-		emailTemplate = emailTemplate.replace("{{PROJ_NAME}}", JOB_BASE_NAME)
-		
-		emailTemplate = emailTemplate.replace("{{BUILD_STATUS}}", BUILD_STATUS)
-		if(ERROR_MESSAGE) {
-			emailTemplate = emailTemplate.replace("{{ERROR_MESSAGE}}", ERROR_MESSAGE)
-		}
-	} catch(Exception err) {
-		ERROR_MESSAGE=err
-		BUILD_STATUS=FAILED
-	}
-	return emailTemplate
+def prepareEmailableReport(msg) {
+    echo ${TOTAL_TIME};
+	
 }
 def getFileContent(template) {
 	emailTemplate = readFile template;
