@@ -46,11 +46,10 @@ def updateXRayWithTestNG(testPlan) {
 	}
 }
 def sendEmail(emailRecipients,info) {
- echo "${EMAIL_INFO}"
+	 echo "${EMAIL_INFO}"
 	def status = 'Passed'
-   if ("${emailRecipients}" != 'NA' ){
-		  str = info.split('\n')
-
+  /* 	if ("${emailRecipients}" != 'NA' ){
+		  str = info.split('\n')*/
 
 	   echo "first element ${status}"
 
@@ -82,7 +81,7 @@ def sendEmail(emailRecipients,info) {
 			}
 		}*/
 
-	}
+	//}
 
 
 	  /*emailext body: '${FILE,path="__test-results/email-report.html"}', mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '${email_recipients}'*/
