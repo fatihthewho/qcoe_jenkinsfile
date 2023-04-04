@@ -1,14 +1,14 @@
-#!/bin/groovy
+// Define variable
+def myVariable = "foo"
 
-node {
-   def test = "abc"
-    stage('Preparation') { // for display purposes
-        echo "${test}"
+// Print variable
+pipeline {
+  agent any
+  stages {
+    stage ("Print variable") {
+      steps {
+        echo "My variable is ${myVariable}"
+      }
     }
-    stage('Build') {
-
-    }
-    stage('Results') {
-
-    }
+  }
 }
