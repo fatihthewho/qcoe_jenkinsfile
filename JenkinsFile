@@ -1,7 +1,7 @@
 try {
 	node (label:'selenium'){
 		stage ('Setup') {
-			helper = load "${env.WORKSPACE.split('@')[0]}/src/helpers.groovy"
+			helper = load "${env.WORKSPACE}/src/helpers.groovy"
 		}
 		
 		stage ('Project Checkout'){		
