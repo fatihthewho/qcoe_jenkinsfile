@@ -2,23 +2,32 @@ try {
 	node {
 		stage ('Setup') {
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
-			helper.info("Yay")
+			helper.info("${no_of_parallel_threads}")
 		}
 	node("selenium"){
 		stage ('Checkout'){	
-			echo "===accessing Team's repo  ==============="		
+			echo "===accessing Project repo  ==============="		
 			helper.checkoutRepo("https://bitbucket.org/insightsoftware-qcoe/qcoe_java_web_api","master")			
 		}
 		stage ('Build'){	
 			bat 'mvn clean compile'			
 		}
+		stage ('Test'){ 
+			try{
+				bat 'mvn test -DthreadCount=%no_of_parallel_threads% -Dremote=%use_selenium_grid% -DBrowser=%browser% -Denv=%environment% -Dretry=%no_of_retries% -DsuiteFile=testngsuites/%test_suite_file%'
+			}
+			catch(Exception ex)	{
+				println(ex)					
+			}	
+		}
+		
+	                 
 	}
 		
 	}		
 	
 } catch(Exception ex) {
-	println(ex)
-	
+	println(ex)	
     currentBuild.result = 'FAILURE'
 } finally {
 	echo "===Done  ==============="
