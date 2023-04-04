@@ -13,7 +13,7 @@ try {
 		}
 		stage ('Test'){ 
 			try{
-			 helper.executeMavenTests(${no_of_parallel_threads}, ${%use_selenium_grid}, ${browser}, ${environment}, ${no_of_retries}, ${test_suite_file})
+			 helper.executeMavenTests(${no_of_parallel_threads}, ${use_selenium_grid}, ${browser}, ${environment}, ${no_of_retries}, ${test_suite_file})
 				
 			}
 			catch(Exception ex)	{
