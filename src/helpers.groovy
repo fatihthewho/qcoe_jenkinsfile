@@ -24,12 +24,12 @@ def archiveJavaArtifacts() {
             
 }
 def updateXRayWithTestNG(project,testPlan) {
-	if ("${jira_project_key}" != 'NA' ){
+	if ("${testPlan}" != 'NA' ){
 			step(
 			[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: '''{
 			"fields": {
 				"project": {
-					"key": "${project}"
+					"key": "${testPlan.split('-')[0]}"
 				},
 				"summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
 				"issuetype": {
