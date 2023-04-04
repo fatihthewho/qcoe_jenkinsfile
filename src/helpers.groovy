@@ -14,7 +14,7 @@ def checkoutRepo(url,branch){
 		
 }
 def executeMavenTests(threadCount,isRemote,browser,environment,retries,xmlFileName) {
-    bat 'mvn test -DthreadCount=${threadCount} -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}'
+    bat 'mvn test -DthreadCount="${threadCount}" -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}'
 }
 def archiveArtifacts() {
     archiveArtifacts "${PROJECT_LOCATION}/bin/${SLN_CONFIG}/logs/**/*.*"
