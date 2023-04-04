@@ -5,9 +5,10 @@ try {
 			helper.info("Yay")
 		}
 	node("selenium"){
-		stage ('Checkout'){		
-			helper.checkoutRepo("ranorex")
-			echo "===accessing Team's repo  ==============="
+		stage ('Checkout'){	
+			echo "===accessing Team's repo  ==============="		
+			helper.checkoutRepo("https://bitbucket.org/insightsoftware-qcoe/qcoe_java_web_api","master")
+			
 			
 		}
 	}
