@@ -7,7 +7,7 @@ def helper
 		  def stdout
 		  echo "Workspace ${env.WORKSPACE}"
 		  String temp = "${env.WORKSPACE}@script"
-		  bat "cd '$temp'"
+		  bat '''cd "$temp"'''
                 stdout = bat(returnStdout: true, script:'''dir "*@tmp" /AD /s''')
                 echo "${stdout}"
                 echo "${env.WORKSPACE}"
