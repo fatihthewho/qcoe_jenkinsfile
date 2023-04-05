@@ -16,7 +16,6 @@ try {
 				bat 'mvn clean compile'
 			}
 			stage ('Test'){
-			echo "===accessing Project repos  ==============="
                 try{
                  executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
                  }
@@ -72,5 +71,11 @@ def archiveJavaArtifacts() {
 	archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\Report.html', followSymlinks: false
 	testNG showFailedBuilds: true
 	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: '__test-results',reportFiles: 'Report.html',reportName: 'Test Summary',reportTitles: ''])
+
+}
+def archiveCSharpArtifacts(){
+      archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\index.html', followSymlinks: false
+      nunit testResultsPattern: 'TestResult.xml'
+      publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: '__test-results',reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
 
 }

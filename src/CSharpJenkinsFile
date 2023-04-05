@@ -1,0 +1,75 @@
+try {
+	def status = 'pass'
+	node
+	{
+
+		stage ('Setup') {
+		cleanWs()
+		  echo "Setup Stage"
+		}
+		node("selenium"){
+			stage ('Checkout'){
+				echo "===accessing Project repo  ==============="
+				checkoutRepo(params.repo_url,params.branch)
+			}
+			stage ('Build'){
+				bat 'dotnet build'
+			}
+			stage ('Test'){
+                try{
+                 executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_selection_criteria)
+                 }
+                 catch(Exception e){
+                 status="fail"
+                 }
+			}
+			stage("Artifacts") {
+				echo "=======Artifacts stage ===="
+				archiveCSharpArtifacts();
+
+			}
+			stage('XRay') {
+				echo "=======XRay Stage ===="
+			}
+		}
+        stage ('Send Email') {
+            echo "=======EMail Stage ===="
+              if(status!="pass"){
+                        currentBuild.result = 'FAILURE'
+              }
+        }
+
+
+
+	}
+
+
+} catch(Exception ex) {
+	println(ex)
+    currentBuild.result = 'FAILURE'
+} finally {
+
+	echo "===Done  ==============="
+}
+
+def checkoutRepo(url,branch){
+	echo "checking out ${url} ${branch} "
+	checkout([$class: 'GitSCM',
+		branches: [[name: "*/${branch}"]],
+		doGenerateSubmoduleConfigurations: false,
+		extensions: [[$class: 'CleanCheckout']],
+		submoduleCfg: [],
+		userRemoteConfigs: [[credentialsId: 'bitbucket-svc1', url: "${url}"]]
+	])
+
+}
+def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
+	bat "nunit3-console TestAutomation.csproj --workers=${threads} --tp:remote=${isRemote} --tp:browser==${browser} --tp:env=${environment} ${testSelection}"
+}
+
+def archiveCSharpArtifacts(){
+      archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\index.html', followSymlinks: false
+      nunit testResultsPattern: 'TestResult.xml'
+      publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: '__test-results',reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
+
+}
