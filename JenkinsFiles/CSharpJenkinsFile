@@ -1,3 +1,5 @@
+package JenkinsFiles
+
 try {
 	def status = 'pass'
 	node
