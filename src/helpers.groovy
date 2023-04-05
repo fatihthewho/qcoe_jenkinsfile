@@ -2,28 +2,8 @@ import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
 EMAIL_INFO = "temp"
 
-def checkoutRepo(url,branch){
-	echo "checking out ${url} ${branch} "
-	echo "${GIT_DIR}"
-	checkout([$class: 'GitSCM',
-		branches: [[name: "*/${branch}"]],
-		doGenerateSubmoduleConfigurations: false,
-		extensions: [[$class: 'CleanCheckout']],
-		submoduleCfg: [],
-		userRemoteConfigs: [[credentialsId: 'bitbucket-svc1', url: "${url}"]]
-	])
 
-}
-def executeMavenTests(threads,isRemote,browser,environment,retries,xmlFileName) {
 
-    bat "mvn test -DthreadCount=${threads} -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}"
-}
-def archiveJavaArtifacts() {
-	archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\Report.html', followSymlinks: false
-	testNG showFailedBuilds: true
-	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: '__test-results',reportFiles: 'Report.html',reportName: 'Test Summary',reportTitles: ''])
-
-}
 def updateXRayWithTestNG(testPlan) {
 	if ("${testPlan}" != 'NA' ){
 			step(
