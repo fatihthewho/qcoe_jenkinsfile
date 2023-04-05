@@ -4,6 +4,7 @@ EMAIL_INFO = "temp"
 
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
+	echo "${GIT_DIR}"
 	checkout([$class: 'GitSCM',
 		branches: [[name: "*/${branch}"]],
 		doGenerateSubmoduleConfigurations: false,
