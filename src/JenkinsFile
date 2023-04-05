@@ -1,9 +1,10 @@
 try {
-	node
 	def status = 'pass'
+	node
 	{
-	 cleanWs()
+
 		stage ('Setup') {
+		cleanWs()
 		  echo "Setup Stage"
 		}
 		node("selenium"){
@@ -40,6 +41,7 @@ try {
         }
 
 
+
 	}
 
 
@@ -50,10 +52,9 @@ try {
 
 	echo "===Done  ==============="
 }
-//######################################################### Methods #########################################
+
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
-	echo "${GIT_DIR}"
 	checkout([$class: 'GitSCM',
 		branches: [[name: "*/${branch}"]],
 		doGenerateSubmoduleConfigurations: false,
