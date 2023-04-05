@@ -17,7 +17,7 @@ try {
 			}
 			stage ('Test'){
                 try{
-                 executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_selection_criteria)
+                 executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
                  }
                  catch(Exception e){
                  status="fail"
