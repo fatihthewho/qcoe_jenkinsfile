@@ -46,7 +46,7 @@ def updateXRayWithTestNG(testPlan) {
 def prepareEmail(emailRecipients) {
 	 echo "${EMAIL_INFO}"
 	String[] lines = EMAIL_INFO.split('\n')
-	for (element in lines) {
+/*	for (element in lines) {
 		String[] data = element.split('=')
 		switch(data[0].trim()) {
 			case "tests_total":
@@ -65,7 +65,7 @@ def prepareEmail(emailRecipients) {
 				echo "YAYYYYYYYY";
 				break
 		}
-	}
+	}*/
 
 }
 

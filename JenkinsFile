@@ -8,10 +8,11 @@ def helper
 		}
 		node("selenium"){
 			stage ('Checkout'){
+			   helper.prepareEmail(params.email_recipients)
 				echo "===accessing Project repo  ==============="
 				helper.checkoutRepo(params.repo_url,params.branch)
 			}
-			 stage ('Build'){
+			stage ('Build'){
 				bat 'mvn clean compile'
 			}
 			stage ('Test'){
@@ -37,9 +38,9 @@ def helper
 				//helper.updateXRayWithTestNG(params.test_plan_key)
 			}
 		}
-		stage ('Send Email') {
-			helper.prepareEmail(params.email_recipients)
-		}
+        stage ('Send Email') {
+
+        }
 
 	}
 
