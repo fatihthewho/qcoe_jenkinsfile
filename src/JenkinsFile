@@ -7,10 +7,8 @@ def helper
 		  def stdout
 		  echo "Workspace ${env.WORKSPACE}"
 		  String temp = "${env.WORKSPACE}@script"
-		   bat "cd ${temp}"
-
-                echo "Workspace ${env.WORKSPACE}"
-			helper = load 'helpers.groovy'
+		  	def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
+          		println(std)
 		}
 		node("selenium"){
 			stage ('Checkout'){
