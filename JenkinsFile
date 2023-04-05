@@ -36,7 +36,6 @@ try {
 			}
 		}
 		stage ('Email') {
-
 			helper.sendEmail(params.email_recipients)
 		}
 

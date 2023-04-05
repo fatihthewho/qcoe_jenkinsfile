@@ -1,9 +1,7 @@
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
 EMAIL_INFO = "temp"
-def info(msg) {
-	echo "MESSAGE : ${msg}"
-}
+
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
 	checkout([$class: 'GitSCM',
@@ -108,11 +106,7 @@ def sendEmail(emailRecipients) {
 
 
 }
-def prepareEmailableReport() {
-echo "Test: ${TOTAL_TIME}";
-    echo "Test: ${vari}";
 
-}
 def getFileContent(template) {
 	emailTemplate = readFile template;
 	return emailTemplate;
