@@ -6,6 +6,7 @@ def helper
 		stage ('Setup') {
 		  def stdout
 		  echo "Workspace ${env.WORKSPACE}"
+		  sleep 60
 		  String temp = "${env.WORKSPACE}@script"
 		  bat "cd $temp"
                 stdout = bat(returnStdout: true, script:'''dir "*@tmp" /AD /s''')
