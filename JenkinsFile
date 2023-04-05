@@ -3,6 +3,7 @@ try {
 def helper
 	node
 	{
+	cleanWs()
 		stage ('Setup') {
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
 		}
