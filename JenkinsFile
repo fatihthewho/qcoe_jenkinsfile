@@ -37,7 +37,7 @@ try {
 		}
 		stage ('Email') {
 
-			helper.sendEmail(params.email_recipients,"${EMAIL_INFO}")
+			helper.sendEmail(params.email_recipients)
 		}
 
 	}
