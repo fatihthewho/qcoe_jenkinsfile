@@ -36,8 +36,8 @@ def helper
 				//helper.updateXRayWithTestNG(params.test_plan_key)
 			}
 		}
-		stage ('Email') {
-			helper.sendEmail(params.email_recipients)
+		stage ('Send Email') {
+			helper.prepareEmail(params.email_recipients)
 		}
 
 	}

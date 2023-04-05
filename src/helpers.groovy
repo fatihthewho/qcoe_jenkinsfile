@@ -43,7 +43,7 @@ def updateXRayWithTestNG(testPlan) {
 			)
 	}
 }
-def sendEmail(emailRecipients) {
+def prepareEmail(emailRecipients) {
 	 echo "${EMAIL_INFO}"
 	String[] lines = EMAIL_INFO.split('\n')
 	for (element in lines) {
