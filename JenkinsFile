@@ -5,6 +5,7 @@ def helper
 	{
 	cleanWs()
 		stage ('Setup') {
+		echo "${env.WORKSPACE}"
 			helper = load "${env.WORKSPACE.split('@')[0]}@script/src/helpers.groovy"
 		}
 		node("selenium"){
