@@ -8,7 +8,8 @@ def helper
 		}
 		node("selenium"){
 			stage ('Checkout'){
-			   helper.prepareEmail(params.email_recipients)
+			echo "===params.email_recipients  ==============="
+			    helper.prepareEmail()
 				echo "===accessing Project repo  ==============="
 				helper.checkoutRepo(params.repo_url,params.branch)
 			}
