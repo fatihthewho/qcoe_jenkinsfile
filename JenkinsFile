@@ -1,5 +1,6 @@
 #!/bin/groovy
 try {
+def helper
 	node
 	{
 		stage ('Setup') {

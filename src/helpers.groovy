@@ -45,21 +45,21 @@ def updateXRayWithTestNG(testPlan) {
 }
 def sendEmail(emailRecipients) {
 	 echo "${EMAIL_INFO}"
-	String[] lines = {EMAIL_INFO.split('n')}
+	String[] lines = EMAIL_INFO.split('\n')
 	for (element in lines) {
-		String[] data = {element.split('=')}
+		String[] data = element.split('=')
 		switch(data[0].trim()) {
 			case "tests_total":
 				echo "total : ${data[1]}";
 				break;
 			case "tests_passed":
-				echo "total : ${data[1]}";
+				echo "passed : ${data[1]}";
 				break;
 			case "tests_failed":
-				echo "total : ${data[1]}";
+				echo "failed : ${data[1]}";
 				break;
 			case "tests_skipped":
-				echo "total : ${data[1]}";
+				echo "skipped : ${data[1]}";
 				break;
 			default:
 				echo "YAYYYYYYYY";
