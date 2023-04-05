@@ -66,44 +66,6 @@ def prepareEmail(emailRecipients) {
 				break
 		}
 	}
-  /* 	if ("${emailRecipients}" != 'NA' ){
-		  str = info.split('\n')*/
-
-	  /* echo "first element ${status[0]}"
-
-	   /*echo "${lines}"
-	  	for (element in lines) {
-		    echo " boom : ${element}"
-			temp = "${element.split('=')[0]};
-			echo "${temp}"
-		    try {
-			     switch(temp) {
-					case "tests_total":
-					echo "total : ${element.split('=')[1]}";
-					break;
-					case "tests_passed":
-					echo "passed : ${element.split('=')[1]}";
-					break;
-					case "tests_failed":
-					echo "failed : ${element.split('=')[1]}";
-					break;
-					case "tests_skipped":
-					echo "skipped: ${element.split('=')[1]}";
-					break;
-				    default:
-					echo "YAYYYYYYYY";
-					break
-				}
-			}catch(Exception err) {
-				echo "${err}"
-			}
-		}*/
-
-	//}
-
-
-	  /*emailext body: '${FILE,path="__test-results/email-report.html"}', mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '${email_recipients}'*/
-
 
 }
 
