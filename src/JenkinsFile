@@ -5,7 +5,9 @@ def helper
 	cleanWs()
 		stage ('Setup') {
 		  def stdout
-		  bat '''cd "${env.WORKSPACE}@script"'''
+		  echo "Workspace ${env.WORKSPACE}"
+		  String temp = "${env.WORKSPACE}@script"
+		  bat "cd $temp"
 		       String temp = "${env.WORKSPACE}@script/*tmp"
                 stdout = bat(returnStdout: true, script:'''dir "*@tmp" /AD /s''')
                 echo "${stdout}"
