@@ -64,7 +64,7 @@ def checkoutRepo(url,branch){
 
 }
 def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
-	bat "nunit3-console TestAutomation.csproj --workers=${threads} --tp:remote=${isRemote} --tp:browser==${browser} --tp:env=${environment} ${testSelection}"
+	bat "nunit3-console TestAutomation.csproj --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
 }
 
 def archiveCSharpArtifacts(){
