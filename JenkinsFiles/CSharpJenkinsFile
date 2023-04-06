@@ -1,6 +1,6 @@
 try {
 	def status = 'pass'
-	def path
+	def CURRENT_DIR_PATH
 	node
 	{
 
@@ -12,13 +12,14 @@ try {
 			def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
 			temp = std.trim().replace("\n","")
 			echo "modified:${temp}"
-			helpers = load "${temp.replace('@tmp','')}/src/helpers.groovy"
-			echo "after:${path}"
+			CURRENT_DIR_PATH=temp.replace('@tmp','')
+			helpers = load "${CURRENT_DIR_PATH}/src/helpers.groovy"
+			echo "after:${CURRENT_DIR_PATH}"
 		}
 		node("selenium"){
 			stage ('Checkout'){
 				echo "===accessing Project repo  ==============="
-				echo "===path is ${path}  ==============="
+				echo "===path is ${CURRENT_DIR_PATH}  ==============="
 				checkoutRepo(params.repo_url,params.branch)
 			}
 			stage ('Build'){
