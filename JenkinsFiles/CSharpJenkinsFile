@@ -10,7 +10,7 @@ try {
 			def temp = "${env.WORKSPACE}@script"
 			echo "${temp}"
 			def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
-			temp = t.replace("\n","")
+			temp = std.trim().replace("\n","")
 			echo "modified:${temp}"
 		}
 		node("selenium"){
