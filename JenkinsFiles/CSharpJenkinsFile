@@ -5,9 +5,13 @@ try {
 	node
 	{
 
-		stage ('Setup') {
+		stage ('Master Setup') {
 		cleanWs()
 		  echo "Setup Stage"
+			def temp = "${env.WORKSPACE}@script"
+			echo "${temp}"
+			def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
+			echo "${std}"
 		}
 		node("selenium"){
 			stage ('Checkout'){
@@ -34,7 +38,7 @@ try {
 				echo "=======XRay Stage ===="
 			}
 		}
-        stage ('Send Email') {
+        stage ('Email') {
             echo "=======EMail Stage ===="
               if(status!="pass"){
                         currentBuild.result = 'FAILURE'
