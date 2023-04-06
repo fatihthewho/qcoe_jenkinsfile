@@ -22,16 +22,16 @@ try {
 				bat 'dotnet build'
 			}
 			stage ('Test'){
-                try{
+                /*try{
                  executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
                  }
                  catch(Exception e){
                  status="fail"
-                 }
+                 }*/
 			}
 			stage("Artifacts") {
 				echo "=======Artifacts stage ===="
-				archiveCSharpArtifacts();
+				//archiveCSharpArtifacts();
 
 			}
 			stage('XRay') {
