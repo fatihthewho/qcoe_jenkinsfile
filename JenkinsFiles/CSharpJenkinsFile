@@ -2,6 +2,7 @@ package JenkinsFiles
 
 try {
 	def status = 'pass'
+	def path
 	node
 	{
 
@@ -12,10 +13,13 @@ try {
 			echo "${temp}"
 			def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
 			echo "${std}"
+			path = "${std.split('@')[0]}"
+			helpers = load "${path}/src/helpers.groovy"
 		}
 		node("selenium"){
 			stage ('Checkout'){
 				echo "===accessing Project repo  ==============="
+				echo "===path is ${path}  ==============="
 				checkoutRepo(params.repo_url,params.branch)
 			}
 			stage ('Build'){
