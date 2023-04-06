@@ -12,6 +12,8 @@ try {
 			def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
 			temp = std.trim().replace("\n","")
 			echo "modified:${temp}"
+			helpers = load "${temp}/src/helpers.groovy"
+			echo "after:${path}"
 		}
 		node("selenium"){
 			stage ('Checkout'){
