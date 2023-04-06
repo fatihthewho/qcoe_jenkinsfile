@@ -1,9 +1,5 @@
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
-EMAIL_INFO = "temp"
-
-
-
 def updateXRayWithTestNG(testPlan) {
 	if ("${testPlan}" != 'NA' ){
 			step(

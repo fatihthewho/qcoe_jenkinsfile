@@ -1,5 +1,3 @@
-package JenkinsFiles
-
 try {
 	def status = 'pass'
 	def path
@@ -12,9 +10,7 @@ try {
 			def temp = "${env.WORKSPACE}@script"
 			echo "${temp}"
 			def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
-			echo "${std}"
-			path = "${std.split('@')[0]}"
-			helpers = load "${path}/src/helpers.groovy"
+			echo "${std.replace('\n','')}"
 		}
 		node("selenium"){
 			stage ('Checkout'){
