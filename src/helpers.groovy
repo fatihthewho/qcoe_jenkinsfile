@@ -27,8 +27,9 @@ def archiveCSharpArtifacts(){
 
 def updateXRayWithTestNG(testPlan) {
 	if ("${testPlan}" != 'NA' ){
+		echo "${testPlan}"
 		step(
-				[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: '''{
+				[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: """{
 			"fields": {
 				"project": {
 					"key": "${testPlan.split('-')[0]}"
@@ -41,7 +42,7 @@ def updateXRayWithTestNG(testPlan) {
 			"xrayFields": {
 					"testPlanKey": "${testPlan}"
 				}
-			}''', importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
+			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
 		)
 	}
 }
@@ -108,6 +109,17 @@ def sendEmail(emailRecipients) {
 def getFileContent(file) {
 	temp = readFile file;
 	return temp;
+
+}
+def executeMavenTests(threads, isRemote, browser, environment, retries, xmlFileName) {
+
+	bat "mvn test -DthreadCount=${threads} -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}"
+}
+
+def archiveJavaArtifacts() {
+	archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\Report.html', followSymlinks: false
+	testNG showFailedBuilds: true
+	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
 
 }
 

@@ -64,21 +64,3 @@ def checkoutRepo(url, branch) {
 
 }
 
-def executeMavenTests(threads, isRemote, browser, environment, retries, xmlFileName) {
-
-    bat "mvn test -DthreadCount=${threads} -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}"
-}
-
-def archiveJavaArtifacts() {
-    archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\Report.html', followSymlinks: false
-    testNG showFailedBuilds: true
-    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
-
-}
-
-def archiveCSharpArtifacts() {
-    archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\index.html', followSymlinks: false
-    nunit testResultsPattern: 'TestResult.xml'
-    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'index.html', reportName: 'Test Summary', reportTitles: ''])
-
-}

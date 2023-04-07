@@ -26,19 +26,37 @@ try {
                         println(e)
                         status = false
                     }
+                    try {
                     stage("Artifacts") {
                         EMAIL_INFO = jutils.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
                         echo "=======Artifacts stage ===="
                         jutils.archiveCSharpArtifacts()
                     }
-                    stage('XRay') {
-                        echo "=======XRay Stage ===="
-                        jutils.updateXRayWithNUnit(params.test_plan_key)
+                    }
+                    catch (Exception e) {
+                        println(e)
+                        status = false
+                    }
+                    try {
+                        stage('XRay') {
+                            echo "=======XRay Stage ===="
+                            jutils.updateXRayWithNUnit(params.test_plan_key)
+                        }
+                    }
+                    catch (Exception e) {
+                        println(e)
+                        status = false
                     }
                 }
-                stage('Email') {
-                    echo "=======EMail Stage ===="
-                    jutils.sendEmail(params.email_recipients)
+                try {
+                    stage('Email') {
+                        echo "=======EMail Stage ===="
+                        jutils.sendEmail(params.email_recipients)
+                    }
+                }
+                catch (Exception e) {
+                    println(e)
+                    status = false
                 }
             }
 
@@ -49,7 +67,7 @@ try {
     if (!status) {
         currentBuild.result = 'FAILURE'
     }
-    echo "===Done=="
+    echo "===Done==="
 }
 
 def getCurrentDirectory() {
