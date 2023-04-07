@@ -1,67 +1,64 @@
 try {
 	def status = 'pass'
 	node
-	{
-		stage ('Master Setup') {
-		cleanWs()
-		  echo "Setup Stage"
-			def temp = getCurrentDirectory();
-			jutils= load "${temp}/src/helpers.groovy"
-			CURRENT_DIR_PATH = temp;
-		}
-		node("selenium"){
-			stage ('Checkout'){
-				echo "===accessing Project repo  ==============="
-				echo "===path is ${CURRENT_DIR_PATH}  ==============="
-				jutils.checkoutRepo(params.repo_url,params.branch)
-			}
-			stage ('Build'){
-				bat 'dotnet build'
-			}
-			stage ('Test'){
-                /*try{
-                 executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
-                 }
-                 catch(Exception e){
-                 status="fail"
-                 }*/
-			}
-			stage("Artifacts") {
-				echo "=======Artifacts stage ===="
-				//archiveCSharpArtifacts();
+			{
+				stage ('Master Setup') {
+					cleanWs()
+					def temp = getCurrentDirectory();
+					jutils= load "${temp}/src/helpers.groovy"
+					CURRENT_DIR_PATH = temp;
+				}
+				node("selenium"){
+					stage ('Checkout'){
+						echo "===checking out project repo  ==============="
+						jutils.checkoutRepo(params.repo_url,params.branch)
+					}
+					stage ('Build'){
+						bat 'dotnet build'
+					}
+					stage ('Test'){
+						/*try{
+                         executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
+                         }
+                         catch(Exception e){
+                         status="fail"
+                         }*/
+						EMAIL_INFO = jutils.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
+					}
+					stage("Artifacts") {
+						echo "=======Artifacts stage ===="
+						//archiveCSharpArtifacts();
 
-			}
-			stage('XRay') {
-				echo "=======XRay Stage ===="
-				EMAIL_INFO = jelper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
-			}
-		}
-        stage ('Email') {
-            echo "=======EMail Stage ===="
-			jutils.sendEmail("venkata.kunta@insightsoftware.com")
-              if(status!="pass"){
-				  currentBuild.result = 'FAILURE'
-              }
-        }
+					}
+					stage('XRay') {
+						echo "=======XRay Stage ===="
 
+					}
+				}
+				stage ('Email') {
+					echo "=======EMail Stage ===="
+					jutils.sendEmail(params.email_recipients)
+					if(status!="pass"){
+						currentBuild.result = 'FAILURE'
+					}
+				}
 
 
-	}
+
+			}
 
 
 } catch(Exception ex) {
 	println(ex)
-    currentBuild.result = 'FAILURE'
+	currentBuild.result = 'FAILURE'
 } finally {
 
 	echo "===Done  ==============="
 }
 def getCurrentDirectory(){
 	def temp = "${env.WORKSPACE}@script"
-	echo "${temp}"
 	def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
 	temp = std.trim().replace("\n","")
 	echo "modified:${temp}"
 	return temp.replace('@tmp','')
 }
-

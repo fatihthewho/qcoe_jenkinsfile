@@ -1,7 +1,7 @@
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
-EMAIL_INFO
-CURRENT_DIR_PATH
+def EMAIN_INFO
+def CURRENT_DIR_PATH
 
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
@@ -27,8 +27,8 @@ def archiveCSharpArtifacts(){
 
 def updateXRayWithTestNG(testPlan) {
 	if ("${testPlan}" != 'NA' ){
-			step(
-			[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: '''{
+		step(
+				[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: '''{
 			"fields": {
 				"project": {
 					"key": "${testPlan.split('-')[0]}"
@@ -42,14 +42,13 @@ def updateXRayWithTestNG(testPlan) {
 					"testPlanKey": "${testPlan}"
 				}
 			}''', importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
-			)
+		)
 	}
 }
-def prepareEmail(emailRecipients) {
-	 echo "${EMAIL_INFO}"
-	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-repot.html"
+def sendEmail(emailRecipients) {
+	echo "${EMAIL_INFO}"
+	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
 	def lines = EMAIL_INFO.split('\n')
-	println(lines[0])
 	for (element in lines){
 		def data=element.split(',')
 		switch (data[0]){
@@ -72,13 +71,16 @@ def prepareEmail(emailRecipients) {
 				break
 		}
 	}
-	writeFile(file: 'email-report1.html', text: mail)
-
+	def html = 'email-report_temp.html'
+	writeFile(file: '${html}', text: mail)
+	if ("${emailRecipients}" != 'NA' ){
+		emailext body: '${FILE,path="email-report_temp.html"}', mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '$email_recipients'
+	}
 }
 
 def getFileContent(file) {
-	temp = readFile template;
-	return emailTemplate;
+	temp = readFile file;
+	return temp;
 
 }
 
