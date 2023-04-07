@@ -1,6 +1,7 @@
 def status=true
+def XPro = "QPP"
+def XTP = "QPP-189"
 try {
-
 	node
 			{
 				stage ('Master Setup') {
@@ -36,13 +37,15 @@ try {
 					}
 					stage('XRay') {
 						echo "=======XRay Stage ===="
+						XPro = "${test_plan_key.split('-')[0]}"
+						XTP = "${test_plan_key}"
+						echo "${XPro}"
+						echo "${XTP}"
 						//jutils.updateXRayWithNUnit(params.test_plan_key)
-
-						if (params.jira_project_key != 'NA' ){
-							step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: 'TestResult.xml', importInParallel: 'false', importInfo: '''{
+						def temp = """{
                     "fields": {
                         "project": {
-                            "key": "${jira_project_key}"
+                            "key": "${XPro}"
                         },
                         "summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
                         "issuetype": {
@@ -50,21 +53,25 @@ try {
                         }  
                 },
                 "xrayFields": {
-					"testPlanKey": "${test_plan_key}"
+					"testPlanKey": "${XTP}"
 				}
-                }''', importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
+                }"""
+						echo "${temp}"
+
+						if (params.test_plan_key != 'NA') {
+							step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: 'TestResult.xml', importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
                     "fields": {
                         "labels" : ["QCOE_Jenkins"]
                     }
                 }'''])
 						}
 
+
 					}
 				}
 				stage ('Email') {
 					echo "=======EMail Stage ===="
 					jutils.sendEmail(params.email_recipients)
-
 				}
 			}
 
