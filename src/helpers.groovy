@@ -74,7 +74,7 @@ def sendEmail(emailRecipients) {
 	def html = 'email-report_temp.html'
 	writeFile(file: "${html}", text: mail)
 	if ("${emailRecipients}" != 'NA' ){
-		emailext body: '${FILE,path="email-report_temp.html"}', mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '$email_recipients'
+		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '$email_recipients'
 	}
 }
 
