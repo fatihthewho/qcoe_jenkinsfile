@@ -25,7 +25,7 @@ try {
 					}
 					}
 					catch(Exception e){
-						println(ex)
+						println(e)
 						status=false
 					}
 					stage("Artifacts") {
