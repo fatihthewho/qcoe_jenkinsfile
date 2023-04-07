@@ -50,7 +50,7 @@ try {
                         }  
                 },
                 "xrayFields": {
-					"testPlanKey": "{test_plan_key}"
+					"testPlanKey": "${test_plan_key}"
 				}
                 }''', importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
                     "fields": {
