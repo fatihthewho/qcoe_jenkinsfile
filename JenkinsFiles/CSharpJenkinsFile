@@ -1,94 +1,68 @@
-def status=true
-def XPro = "QPP"
-def XTP = "QPP-189"
+def status = true
+
 try {
-	node
-			{
-				stage ('Master Setup') {
-					cleanWs()
-					def temp = getCurrentDirectory();
-					jutils= load "${temp}/src/helpers.groovy"
-					CURRENT_DIR_PATH = temp;
+    node
+            {
+                stage('Master Setup') {
+                    cleanWs()
+                    def temp = getCurrentDirectory()
+					jutils = load "${temp}/src/helpers.groovy"
+                    CURRENT_DIR_PATH = temp
 				}
-				node("selenium"){
-					stage ('Checkout'){
-						echo "===checking out project repo  ==============="
-						jutils.checkoutRepo(params.repo_url,params.branch)
-					}
-					stage ('Build'){
-						bat 'dotnet build'
-					}
-					try{
-					stage ('Test'){
-
-						jutils.executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
-						EMAIL_INFO = jutils.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
-					}
-					}
-					catch(Exception e){
-						println(e)
-						status=false
-					}
-					stage("Artifacts") {
-
-						echo "=======Artifacts stage ===="
-						jutils.archiveCSharpArtifacts();
-
-					}
-					stage('XRay') {
-						echo "=======XRay Stage ===="
-						XPro = "${test_plan_key.split('-')[0]}"
-						XTP = "${test_plan_key}"
-						echo "${XPro}"
-						echo "${XTP}"
-						//jutils.updateXRayWithNUnit(params.test_plan_key)
-						def temp = """{
-                    "fields": {
-                        "project": {
-                            "key": "${XPro}"
-                        },
-                        "summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
-                        "issuetype": {
-                           "name": "Test Execution"
-                        }  
-                },
-                "xrayFields": {
-					"testPlanKey": "${XTP}"
-				}
-                }"""
-						echo "${temp}"
-
-						if (params.test_plan_key != 'NA') {
-							step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: 'TestResult.xml', importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
-                    "fields": {
-                        "labels" : ["QCOE_Jenkins"]
+                node("selenium") {
+                    stage('Checkout') {
+                        echo "===checking out project repo  ==============="
+                        jutils.checkoutRepo(params.repo_url, params.branch)
                     }
-                }'''])
-						}
+                    stage('Build') {
+                        bat 'dotnet build'
+                    }
+                    try {
+                        stage('Test') {
 
+                            jutils.executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
+                            EMAIL_INFO = jutils.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
+                        }
+                    }
+                    catch (Exception e) {
+                        println(e)
+                        status = false
+                    }
+                    stage("Artifacts") {
+
+                        echo "=======Artifacts stage ===="
+                        jutils.archiveCSharpArtifacts()
 
 					}
-				}
-				stage ('Email') {
-					echo "=======EMail Stage ===="
-					jutils.sendEmail(params.email_recipients)
-				}
-			}
+                    stage('XRay') {
+                        echo "=======XRay Stage ===="
+
+                        jutils.updateXRayWithNUnit(params.test_plan_key)
 
 
-} catch(Exception ex) {
-	println(ex)
-	status=false
+                    }
+                }
+                stage('Email') {
+                    echo "=======EMail Stage ===="
+                    jutils.sendEmail(params.email_recipients)
+                }
+            }
+
+
+} catch (Exception ex) {
+    println(ex)
+    status = false
 } finally {
-	if(!status){
-		currentBuild.result = 'FAILURE'
-	}
-	echo "===Done==============="
+    if (!status) {
+        currentBuild.result = 'FAILURE'
+    }
+    echo "===Done==============="
 }
-def getCurrentDirectory(){
-	def temp = "${env.WORKSPACE}@script"
-	def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
-	temp = std.trim().replace("\n","")
-	echo "modified:${temp}"
-	return temp.replace('@tmp','')
+
+def getCurrentDirectory() {
+    def temp = "${env.WORKSPACE}@script"
+    def std = powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
+    temp = std.trim().replace("\n", "")
+    echo "modified:${temp}"
+    return temp.replace('@tmp', '')
 }
