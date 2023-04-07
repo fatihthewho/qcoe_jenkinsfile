@@ -1,5 +1,28 @@
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
+
+def checkoutRepo(url,branch){
+	echo "checking out ${url} ${branch} "
+	checkout([$class: 'GitSCM',
+			  branches: [[name: "*/${branch}"]],
+			  doGenerateSubmoduleConfigurations: false,
+			  extensions: [[$class: 'CleanCheckout']],
+			  submoduleCfg: [],
+			  userRemoteConfigs: [[credentialsId: 'bitbucket-svc1', url: "${url}"]]
+	])
+
+}
+def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
+	bat "nunit3-console TestAutomation.csproj --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
+}
+
+def archiveCSharpArtifacts(){
+	archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\index.html', followSymlinks: false
+	nunit testResultsPattern: 'TestResult.xml'
+	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: '__test-results',reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
+
+}
+
 def updateXRayWithTestNG(testPlan) {
 	if ("${testPlan}" != 'NA' ){
 			step(
@@ -51,4 +74,5 @@ def getFileContent(template) {
 	return emailTemplate;
 
 }
+
 return this
