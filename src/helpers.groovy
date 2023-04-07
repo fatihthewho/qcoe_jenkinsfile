@@ -45,6 +45,29 @@ def updateXRayWithTestNG(testPlan) {
 		)
 	}
 }
+
+def updateXRayWithNUnit(testPlan){
+	if ("${testPlan}" != 'NA' ){
+		step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: 'TestResult.xml', importInParallel: 'false', importInfo: '''{
+                    "fields": {
+                        "project": {
+                            "key": "${testPlan.split('-')[0]}"
+                        },
+                        "summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
+                        "issuetype": {
+                           "name": "Test Execution"
+                        }  
+                },
+                "xrayFields": {
+					"testPlanKey": "${testPlan}"
+				}
+                }''', importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
+                    "fields": {
+                        "labels" : ["QCOE_Jenkins"]
+                    }
+                }'''])
+	}
+}
 def sendEmail(emailRecipients) {
 	echo "${EMAIL_INFO}"
 	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"

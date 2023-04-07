@@ -17,12 +17,12 @@ try {
 						bat 'dotnet build'
 					}
 					stage ('Test'){
-						/*try{
+						try{
                          executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
                          }
                          catch(Exception e){
                          status="fail"
-                         }*/
+                         }
 						EMAIL_INFO = jutils.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
 					}
 					stage("Artifacts") {
@@ -32,6 +32,7 @@ try {
 					}
 					stage('XRay') {
 						echo "=======XRay Stage ===="
+						jutils.updateXRayWithNUnit(params.test_plan_key)
 					}
 				}
 				stage ('Email') {
