@@ -42,7 +42,7 @@ try {
 							step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: 'TestResult.xml', importInParallel: 'false', importInfo: '''{
                     "fields": {
                         "project": {
-                            "key": "QPP"
+                            "key": "${test_plan_key.split('-')[0]}"
                         },
                         "summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
                         "issuetype": {
