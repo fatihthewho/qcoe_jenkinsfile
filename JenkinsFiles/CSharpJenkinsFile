@@ -32,7 +32,6 @@ try {
 					}
 					stage('XRay') {
 						echo "=======XRay Stage ===="
-
 					}
 				}
 				stage ('Email') {
