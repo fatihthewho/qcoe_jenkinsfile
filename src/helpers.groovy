@@ -1,5 +1,7 @@
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
+EMAIL_INFO
+CURRENT_DIR_PATH
 
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
@@ -43,34 +45,39 @@ def updateXRayWithTestNG(testPlan) {
 			)
 	}
 }
-def prepareEmail() {
+def prepareEmail(emailRecipients) {
 	 echo "${EMAIL_INFO}"
-	String[] lines = EMAIL_INFO.split('\n')
-/*	for (element in lines) {
-		String[] data = element.split('=')
-		switch(data[0].trim()) {
-			case "tests_total":
-				echo "total : ${data[1]}";
-				break;
-			case "tests_passed":
-				echo "passed : ${data[1]}";
-				break;
-			case "tests_failed":
-				echo "failed : ${data[1]}";
-				break;
-			case "tests_skipped":
-				echo "skipped : ${data[1]}";
-				break;
-			default:
-				echo "YAYYYYYYYY";
+	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-repot.html"
+	def lines = EMAIL_INFO.split('\n')
+	println(lines[0])
+	for (element in lines){
+		def data=element.split(',')
+		switch (data[0]){
+			case  "total_tests":
+				mail= mail.replace("TOTAL_TESTS", data[1].trim())
+				break
+			case  "passed_tests":
+				println(data[1].trim())
+				mail =mail.replace("TESTS_PASSED", data[1].trim())
+				break
+			case  "failed_tests":
+				println(data[1].trim())
+				mail =mail.replace("TESTS_FAILED", data[1].trim())
+				break
+			case  "skipped_tests":
+				println(data[1].trim())
+				mail = mail.replace("TESTS_SKIPPED", data[1].trim())
+				break
+			default :
 				break
 		}
-	}*/
+	}
+	writeFile(file: 'email-report1.html', text: mail)
 
 }
 
-def getFileContent(template) {
-	emailTemplate = readFile template;
+def getFileContent(file) {
+	temp = readFile template;
 	return emailTemplate;
 
 }

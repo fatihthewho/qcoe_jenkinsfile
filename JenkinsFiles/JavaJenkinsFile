@@ -33,6 +33,7 @@ try {
 			}
 		}
         stage ('Send Email') {
+
             echo "=======EMail Stage ===="
               if(status!="pass"){
                         currentBuild.result = 'FAILURE'

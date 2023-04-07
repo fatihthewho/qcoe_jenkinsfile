@@ -1,26 +1,19 @@
 try {
 	def status = 'pass'
-	def CURRENT_DIR_PATH
-
 	node
 	{
 		stage ('Master Setup') {
 		cleanWs()
 		  echo "Setup Stage"
-			def temp = "${env.WORKSPACE}@script"
-			echo "${temp}"
-			def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
-			temp = std.trim().replace("\n","")
-			echo "modified:${temp}"
-			CURRENT_DIR_PATH=temp.replace('@tmp','')
-			helpers = load "${CURRENT_DIR_PATH}/src/helpers.groovy"
-			echo "after:${CURRENT_DIR_PATH}"
+			def temp = getCurrentDirectory();
+			jutils= load "${temp}/src/helpers.groovy"
+			CURRENT_DIR_PATH = temp;
 		}
 		node("selenium"){
 			stage ('Checkout'){
 				echo "===accessing Project repo  ==============="
 				echo "===path is ${CURRENT_DIR_PATH}  ==============="
-				helpers.checkoutRepo(params.repo_url,params.branch)
+				jutils.checkoutRepo(params.repo_url,params.branch)
 			}
 			stage ('Build'){
 				bat 'dotnet build'
@@ -40,12 +33,14 @@ try {
 			}
 			stage('XRay') {
 				echo "=======XRay Stage ===="
+				EMAIL_INFO = jelper.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
 			}
 		}
         stage ('Email') {
             echo "=======EMail Stage ===="
+			jutils.sendEmail("venkata.kunta@insightsoftware.com")
               if(status!="pass"){
-                        currentBuild.result = 'FAILURE'
+				  currentBuild.result = 'FAILURE'
               }
         }
 
@@ -60,5 +55,13 @@ try {
 } finally {
 
 	echo "===Done  ==============="
+}
+def getCurrentDirectory(){
+	def temp = "${env.WORKSPACE}@script"
+	echo "${temp}"
+	def std =powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
+	temp = std.trim().replace("\n","")
+	echo "modified:${temp}"
+	return temp.replace('@tmp','')
 }
 
