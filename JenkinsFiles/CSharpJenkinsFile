@@ -38,11 +38,11 @@ try {
 						echo "=======XRay Stage ===="
 						//jutils.updateXRayWithNUnit(params.test_plan_key)
 
-						if (params.test_plan_key != 'NA' ){
+						if (params.jira_project_key != 'NA' ){
 							step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: 'TestResult.xml', importInParallel: 'false', importInfo: '''{
                     "fields": {
                         "project": {
-                            "key": "${test_plan_key.split('-')[0]}"
+                            "key": "${jira_project_key}"
                         },
                         "summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
                         "issuetype": {
