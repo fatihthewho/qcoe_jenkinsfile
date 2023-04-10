@@ -126,7 +126,7 @@ def parseNUnitTestResults(filepath) {
 				}
 			}
 			def percentage = (pass / total ) * 100
-			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","")
+			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","%")
 			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
 			println(EMAIL_INFO)
 			break
@@ -168,7 +168,7 @@ def parseTestNGTestResults(filepath) {
 			total= pass+fail+skip
 			EMAIL_INFO["TOTAL_TESTS"] = total.toString()
 			def percentage = (pass / total ) * 100
-			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","")
+			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","%")
 			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
 			println(EMAIL_INFO)
 			break
