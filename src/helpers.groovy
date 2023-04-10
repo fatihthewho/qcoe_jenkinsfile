@@ -156,7 +156,7 @@ def parseTestNGTestResults(filepath) {
 						EMAIL_INFO["TESTS_FAILED"] = fail.toString()
 						break
 					case "skipped":
-						skip = data[1].replace('\"',"").toInteger()
+						skip = data[1].replace('\">',"").toInteger()
 						EMAIL_INFO["TESTS_SKIPPED"] = skip.toString()
 						break
 					default:
