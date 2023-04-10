@@ -1,13 +1,6 @@
-import groovy.json.JsonSlurperClassic
-import groovy.json.JsonOutput
-
 def EMAIL_INFO = [:]
 def CURRENT_DIR_PATH
-def TOTAL_TESTS = "TOTAL_TESTS"
-def TESTS_PASSED = "TESTS_PASSED"
-def TESTS_FAILED = "TESTS_FAILED"
-def TESTS_SKIPPED = "TESTS_SKIPPED"
-def PASS_PERCENTAGE= "PASS_PERCENTAGE"
+
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
 	checkout([$class: 'GitSCM',
@@ -121,27 +114,28 @@ def parseNUnitTestResults(filepath) {
 				switch (data[0]) {
 					case "total":
 						total = data[1].trim().toInteger()
-						EMAIL_INFO[TOTAL_TESTS] = total.toString()
+						EMAIL_INFO["TOTAL_TESTS"] = total.toString()
 						break
 					case "passed":
 						pass = data[1].trim().toInteger()
-						EMAIL_INFO[TESTS_PASSED] = pass.toString()
+						EMAIL_INFO["TESTS_PASSED"] = pass.toString()
 						break
 					case "failed":
-						EMAIL_INFO[TESTS_FAILED] = data[1].trim()
+						EMAIL_INFO["TESTS_FAILED"] = data[1].trim()
 						break
 					case "skipped":
-						EMAIL_INFO[TESTS_SKIPPED] = data[1].trim()
+						EMAIL_INFO["TESTS_SKIPPED"] = data[1].trim()
 						break
 					default:
 						break
 				}
 			}
+			def percentage = (total / pass) * 100
+			String formattedPercentage = String.format("%.2f%%", percentage)
+			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
+			break
 		}
-		def percentage = (totla / pass) * 100
-		String formattedPercentage = String.format("%.2f%%", percentage)
-		EMAIL_INFO[PASS_PERCENTAGE]= formattedPercentage
-		break
+
 	}
 
 }
