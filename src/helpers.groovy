@@ -1,5 +1,5 @@
-def EMAIL_INFO = [:]
-def CURRENT_DIR_PATH
+EMAIL_INFO = [:] // not working with def
+def CURRENT_DIR_PATH // not working with out def
 
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
@@ -84,11 +84,6 @@ def sendEmail(emailRecipients) {
 	}
 }
 
-def getFileContent(file) {
-	temp = readFile file;
-	return temp;
-
-}
 def executeMavenTests(threads, isRemote, browser, environment, retries, xmlFileName) {
 
 	bat "mvn test -DthreadCount=${threads} -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}"
@@ -131,8 +126,8 @@ def parseNUnitTestResults(filepath) {
 				}
 			}
 			def percentage = (total / pass) * 100
-			String formattedPercentage = String.format("%.2f%%", percentage)
-			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
+			EMAIL_INFO["PASS_PERCENTAGE"]= "{Math.floor(percentage)}%"
+			println(EMAIL_INFO)
 			break
 		}
 
