@@ -72,7 +72,6 @@ def updateXRayWithNUnit(testPlan){
 	}
 }
 def sendEmail(emailRecipients) {
-	echo "${EMAIL_INFO}"
 	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
 	for (element in EMAIL_INFO){
 		mail = mail.replace(element.key, element.value)
@@ -102,7 +101,7 @@ def parseNUnitTestResults(filepath) {
 	echo "${partOfFile}"
 	def lines = partOfFile.split('\n')
 	for (element in lines) {
-		if (element.startsWith("<test-run)")){
+		if (element.startsWith("<test-run")){
 			String[] temp=element.split(" ")
 			for(item in temp) {
 				String[] data = item.split("=")
@@ -126,7 +125,7 @@ def parseNUnitTestResults(filepath) {
 				}
 			}
 			def percentage = (total / pass) * 100
-			EMAIL_INFO["PASS_PERCENTAGE"]= "{Math.floor(percentage)}%"
+			EMAIL_INFO["PASS_PERCENTAGE"]= "${percentage}%"
 			println(EMAIL_INFO)
 			break
 		}
