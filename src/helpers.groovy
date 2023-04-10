@@ -124,8 +124,9 @@ def parseNUnitTestResults(filepath) {
 						break
 				}
 			}
-			def percentage = (total / pass) * 100
-			EMAIL_INFO["PASS_PERCENTAGE"]= "${percentage}%"
+			def percentage = (pass / total ) * 100
+			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","")
+			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
 			println(EMAIL_INFO)
 			break
 		}
