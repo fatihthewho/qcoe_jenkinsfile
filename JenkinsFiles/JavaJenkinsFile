@@ -29,7 +29,7 @@ try {
                     try {
                     stage("Artifacts") {
 
-                        //jutils.parseTestNGTestResults("${env.WORKSPACE}/TestResult.xml")
+                        jutils.parseTestNGTestResults("${env.WORKSPACE}/target/surefire-reports/testng-results.xml")
                         echo "=======Artifacts stage ===="
                         jutils.archiveJavaArtifacts()
                     }
@@ -45,7 +45,7 @@ try {
                         }
                     }
                     catch (Exception e) {
-                        println(e)
+                        println("XRay Error"+e)
                         status = false
                     }
                 }

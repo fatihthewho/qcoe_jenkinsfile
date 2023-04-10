@@ -134,6 +134,47 @@ def parseNUnitTestResults(filepath) {
 	}
 
 }
+def parseTestNGTestResults(filepath) {
+	int fail
+	int pass
+	int skip
+	String partOfFile = readPartOfFile(filepath,10)
+	echo "${partOfFile}"
+	def lines = partOfFile.split('\n')
+	for (element in lines) {
+		if (element.startsWith("<testng-results")){
+			String[] temp=element.split(" ")
+			for(item in temp) {
+				String[] data = item.split("=")
+				switch (data[0]) {
+					case "passed":
+						pass = data[1].replace('\"',"").toInteger()
+						EMAIL_INFO["TESTS_PASSED"] = pass.toString()
+						break
+					case "failed":
+						fail= data[1].replace('\"',"").toInteger()
+						EMAIL_INFO["TESTS_FAILED"] = fail.toString()
+						break
+					case "skipped":
+						skip = data[1].replace('\"',"").toInteger()
+						EMAIL_INFO["TESTS_SKIPPED"] = skip.toString()
+						break
+					default:
+						break
+				}
+			}
+			total= pass+fail+skip
+			EMAIL_INFO["TOTAL_TESTS"] = total.toString()
+			def percentage = (pass / total ) * 100
+			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","")
+			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
+			println(EMAIL_INFO)
+			break
+		}
+
+	}
+
+}
 def readPartOfFile(filePath,lines){
 
 	def cont = powershell returnStdout: true, script: """Get-Content ${filePath} | Select -First 10"""
