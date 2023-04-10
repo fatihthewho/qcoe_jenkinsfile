@@ -107,10 +107,10 @@ def archiveJavaArtifacts() {
 	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
 
 }
-def parseNUnitTestResults(file) {
+def parseNUnitTestResults(filepath) {
 	int total
 	int pass
-	String partOfFile = readPartOfFile(file,1024)
+	String partOfFile = readPartOfFile(filepath,10)
 	echo "${partOfFile}"
 	def lines = partOfFile.split('\n')
 	for (element in lines) {
@@ -145,13 +145,10 @@ def parseNUnitTestResults(file) {
 	}
 
 }
-def readPartOfFile(file,bytes){
+def readPartOfFile(filePath,lines){
 
-	def inputStream = file.newInputStream()
-	byte[] buffer = new byte[bytes]
-	inputStream.read(buffer)
-	inputStream.close()
-	return new String(buffer, "UTF-8")
+	def cont = powershell returnStdout: true, script: """Get-Content ${filePath} | Select -First 10"""
+	return cont
 }
 return this
 
