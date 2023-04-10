@@ -1,65 +1,80 @@
+def status = true
+
 try {
-    def status = 'pass'
     node
             {
-                stage('Setup') {
+                stage('Master Setup') {
                     cleanWs()
-                    echo "Setup Stage"
+                    def temp = getCurrentDirectory()
+                    jutils = load "${temp}/src/helpers.groovy"
+                    CURRENT_DIR_PATH = temp
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
-                        echo "===accessing Project repo  ==============="
-                        checkoutRepo(params.repo_url, params.branch)
+                        echo "===checking out project repo  ==============="
+                        jutils.checkoutRepo(params.repo_url, params.branch)
                     }
                     stage('Build') {
                         bat 'mvn clean compile'
                     }
-                    stage('Test') {
-                        try {
+                    try {
+                        stage('Test') {
                             executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
                         }
-                        catch (Exception e) {
-                            status = "fail"
+                    }
+                    catch (Exception e) {
+                        println(e)
+                        status = false
+                    }
+                    try {
+                    stage("Artifacts") {
+
+                        //jutils.parseTestNGTestResults("${env.WORKSPACE}/TestResult.xml")
+                        echo "=======Artifacts stage ===="
+                        jutils.archiveJavaArtifacts()
+                    }
+                    }
+                    catch (Exception e) {
+                        println(e)
+                        status = false
+                    }
+                    try {
+                        stage('XRay') {
+                            echo "=======XRay Stage ===="
+                            jutils.updateXRayWithTestNG(params.test_plan_key)
                         }
                     }
-                    stage("Artifacts") {
-                        echo "=======Artifacts stage ===="
-                        archiveJavaArtifacts()
-
-                    }
-                    stage('XRay') {
-                        echo "=======XRay Stage ===="
+                    catch (Exception e) {
+                        println(e)
+                        status = false
                     }
                 }
-                stage('Email') {
-
-                    echo "=======EMail Stage ===="
-                    if (status != "pass") {
-                        currentBuild.result = 'FAILURE'
+                try {
+                    stage('Email') {
+                        echo "=======EMail Stage ===="
+                        jutils.sendEmail(params.email_recipients)
                     }
                 }
-
-
+                catch (Exception e) {
+                    println(e)
+                    status = false
+                }
             }
-
 
 } catch (Exception ex) {
     println(ex)
-    currentBuild.result = 'FAILURE'
+    status = false
 } finally {
-
-    echo "===Done  ==============="
+    if (!status) {
+        currentBuild.result = 'FAILURE'
+    }
+    echo "===Done==="
 }
 
-def checkoutRepo(url, branch) {
-    echo "checking out ${url} ${branch} "
-    checkout([$class                           : 'GitSCM',
-              branches                         : [[name: "*/${branch}"]],
-              doGenerateSubmoduleConfigurations: false,
-              extensions                       : [[$class: 'CleanCheckout']],
-              submoduleCfg                     : [],
-              userRemoteConfigs                : [[credentialsId: 'bitbucket-svc1', url: "${url}"]]
-    ])
-
+def getCurrentDirectory() {
+    def temp = "${env.WORKSPACE}@script"
+    def std = powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
+    temp = std.trim().replace("\n", "")
+    echo "modified:${temp}"
+    return temp.replace('@tmp', '')
 }
-
