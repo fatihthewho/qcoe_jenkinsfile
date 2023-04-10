@@ -28,7 +28,19 @@ try {
                     }
                     try {
                     stage("Artifacts") {
-                        jutils.parseNUnitTestResults(new File("${env.WORKSPACE}/TestResult.xml"))
+                        try {
+                            fileStream = readFileFromWorkspace filePath: "${env.WORKSPACE}/TestResult.xml"
+                            def reader = new BufferedReader(new InputStreamReader(fileStream))
+                            while ((line = reader.readLine()) != null) {
+                                // Do something with the current line
+                                println "Line read: ${line}"
+                            }
+                        } catch (err) {
+                            error("Failed to read file ${filePath}: ${err}")
+                        } finally {
+                            fileStream?.close()
+                        }
+                       // jutils.parseNUnitTestResults(new File("${env.WORKSPACE}/TestResult.xml"))
                         echo "=======Artifacts stage ===="
                         jutils.archiveCSharpArtifacts()
                     }
