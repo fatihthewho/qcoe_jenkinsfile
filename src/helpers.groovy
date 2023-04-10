@@ -1,8 +1,13 @@
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
-def EMAIL_INFO
-def CURRENT_DIR_PATH
 
+def EMAIL_INFO = [:]
+def CURRENT_DIR_PATH
+def TOTAL_TESTS = "TOTAL_TESTS"
+def TESTS_PASSED = "TESTS_PASSED"
+def TESTS_FAILED = "TESTS_FAILED"
+def TESTS_SKIPPED = "TESTS_SKIPPED"
+def PASS_PERCENTAGE= "PASS_PERCENTAGE"
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
 	checkout([$class: 'GitSCM',
@@ -76,29 +81,9 @@ def updateXRayWithNUnit(testPlan){
 def sendEmail(emailRecipients) {
 	echo "${EMAIL_INFO}"
 	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
-	def lines = EMAIL_INFO.split('\n')
-	for (element in lines){
-		def data=element.split(',')
-		switch (data[0]){
-			case  "total_tests":
-				mail= mail.replace("TOTAL_TESTS", data[1].trim())
-				break
-			case  "passed_tests":
-				println(data[1].trim())
-				mail =mail.replace("TESTS_PASSED", data[1].trim())
-				break
-			case  "failed_tests":
-				println(data[1].trim())
-				mail =mail.replace("TESTS_FAILED", data[1].trim())
-				break
-			case  "skipped_tests":
-				println(data[1].trim())
-				mail = mail.replace("TESTS_SKIPPED", data[1].trim())
-				break
-			default :
-				break
+	for (element in EMAIL_INFO){
+		mail = mail.replace(element.key, element.value)
 		}
-	}
 	def html = 'email-report_temp.html'
 	writeFile(file: "${html}", text: mail)
 	if ("${emailRecipients}" != 'NA' ){
@@ -122,5 +107,51 @@ def archiveJavaArtifacts() {
 	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
 
 }
+def parseNUnitTestResults(file) {
+	int total
+	int pass
+	String partOfFile = readPartOfFile(file,1024)
+	echo "${partOfFile}"
+	def lines = partOfFile.split('\n')
+	for (element in lines) {
+		if (element.startsWith("<test-run)")){
+			String[] temp=element.split(" ")
+			for(item in temp) {
+				String[] data = item.split("=")
+				switch (data[0]) {
+					case "total":
+						total = data[1].trim().toInteger()
+						EMAIL_INFO[TOTAL_TESTS] = total.toString()
+						break
+					case "passed":
+						pass = data[1].trim().toInteger()
+						EMAIL_INFO[TESTS_PASSED] = pass.toString()
+						break
+					case "failed":
+						EMAIL_INFO[TESTS_FAILED] = data[1].trim()
+						break
+					case "skipped":
+						EMAIL_INFO[TESTS_SKIPPED] = data[1].trim()
+						break
+					default:
+						break
+				}
+			}
+		}
+		def percentage = (totla / pass) * 100
+		String formattedPercentage = String.format("%.2f%%", percentage)
+		EMAIL_INFO[PASS_PERCENTAGE]= formattedPercentage
+		break
+	}
 
+}
+def readPartOfFile(file,bytes){
+
+	def inputStream = file.newInputStream()
+	byte[] buffer = new byte[bytes]
+	inputStream.read(buffer)
+	inputStream.close()
+	return new String(buffer, "UTF-8")
+}
 return this
+

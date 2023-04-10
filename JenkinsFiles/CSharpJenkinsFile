@@ -10,7 +10,7 @@ try {
                     CURRENT_DIR_PATH = temp
                 }
                 node("selenium") {
-                    stage('Checkout') {
+                    stage('Checkout Repo') {
                         echo "===checking out project repo  ==============="
                         jutils.checkoutRepo(params.repo_url, params.branch)
                     }
@@ -28,7 +28,7 @@ try {
                     }
                     try {
                     stage("Artifacts") {
-                        EMAIL_INFO = jutils.getFileContent("${env.WORKSPACE}/JenkinsInfo.txt")
+                        jutils.parseNUnitTestResults(new File("${env.WORKSPACE}/TestResult.xml"))
                         echo "=======Artifacts stage ===="
                         jutils.archiveCSharpArtifacts()
                     }

@@ -2,13 +2,12 @@ try {
     def status = 'pass'
     node
             {
-
                 stage('Setup') {
                     cleanWs()
                     echo "Setup Stage"
                 }
                 node("selenium") {
-                    stage('Checkout') {
+                    stage('Checkout Repo') {
                         echo "===accessing Project repo  ==============="
                         checkoutRepo(params.repo_url, params.branch)
                     }
@@ -32,7 +31,7 @@ try {
                         echo "=======XRay Stage ===="
                     }
                 }
-                stage('Send Email') {
+                stage('Email') {
 
                     echo "=======EMail Stage ===="
                     if (status != "pass") {
