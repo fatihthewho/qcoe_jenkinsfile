@@ -102,6 +102,7 @@ def parseNUnitTestResults(filepath) {
 	def lines = partOfFile.split('\n')
 	for (element in lines) {
 		if (element.startsWith("<test-run")){
+			element = element.replace('\"',"")
 			String[] temp=element.split(" ")
 			for(item in temp) {
 				String[] data = item.split("=")
@@ -143,20 +144,21 @@ def parseTestNGTestResults(filepath) {
 	def lines = partOfFile.split('\n')
 	for (element in lines) {
 		if (element.startsWith("<testng-results")){
+			element = element.replace('\"',"")
 			String[] temp=element.split(" ")
 			for(item in temp) {
 				String[] data = item.split("=")
 				switch (data[0]) {
 					case "passed":
-						pass = data[1].replace('\"',"").toInteger()
+						pass = data[1].toInteger()
 						EMAIL_INFO["TESTS_PASSED"] = pass.toString()
 						break
 					case "failed":
-						fail= data[1].replace('\"',"").toInteger()
+						fail= data[1].toInteger()
 						EMAIL_INFO["TESTS_FAILED"] = fail.toString()
 						break
 					case "skipped":
-						skip = data[1].replace('\">',"").toInteger()
+						skip = data[1].replace('>',"").toInteger()
 						EMAIL_INFO["TESTS_SKIPPED"] = skip.toString()
 						break
 					default:
