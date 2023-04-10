@@ -113,18 +113,18 @@ def parseNUnitTestResults(filepath) {
 				String[] data = item.split("=")
 				switch (data[0]) {
 					case "total":
-						total = data[1].trim().toInteger()
+						total = data[1].replace('\"',"").toInteger()
 						EMAIL_INFO["TOTAL_TESTS"] = total.toString()
 						break
 					case "passed":
-						pass = data[1].trim().toInteger()
+						pass = data[1].replace('\"',"").toInteger()
 						EMAIL_INFO["TESTS_PASSED"] = pass.toString()
 						break
 					case "failed":
-						EMAIL_INFO["TESTS_FAILED"] = data[1].trim()
+						EMAIL_INFO["TESTS_FAILED"] = data[1].replace('\"',"")
 						break
 					case "skipped":
-						EMAIL_INFO["TESTS_SKIPPED"] = data[1].trim()
+						EMAIL_INFO["TESTS_SKIPPED"] = data[1].replace('\"',"")
 						break
 					default:
 						break
