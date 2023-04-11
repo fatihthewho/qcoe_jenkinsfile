@@ -18,42 +18,22 @@ def checkoutRepo(url,branch){
 	])
 
 }
-def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
+
+def compileCSharp(project){
 	NUNIT_RESULTS = "${PROJECT_LOCATION}/TestResult.xml"
+	bat "dotnet build ${project}"
+}
+def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
+
 	bat "nunit3-console ${CSPROJ} --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
 
 }
 
 def archiveCSharpArtifacts(){
-	archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_LOCATION}/__test-results/index.html", followSymlinks: false
+	archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_LOCATION}__test-results/index.html", followSymlinks: false
 	nunit testResultsPattern: "${NUNIT_RESULTS}"
-	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: "${PROJECT_LOCATION}/__test-results",reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
+	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: "${PROJECT_LOCATION}__test-results",reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
 
-}
-def compileCSharp(project){
-	bat "dotnet build ${project}"
-}
-
-def updateXRayWithTestNG(testPlan) {
-	if ("${testPlan}" != 'NA' ){
-		echo "${testPlan}"
-		step(
-				[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: """{
-			"fields": {
-				"project": {
-					"key": "${testPlan.split('-')[0]}"
-				},
-				"summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
-				"issuetype": {
-				   "name": "Test Execution"
-				}  
-			},
-			"xrayFields": {
-					"testPlanKey": "${testPlan}"
-				}
-			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
-		)
-	}
 }
 
 def updateXRayWithNUnit(testPlan){
@@ -105,6 +85,28 @@ def archiveJavaArtifacts() {
 	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
 
 }
+def updateXRayWithTestNG(testPlan) {
+	if ("${testPlan}" != 'NA' ){
+		echo "${testPlan}"
+		step(
+				[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: """{
+			"fields": {
+				"project": {
+					"key": "${testPlan.split('-')[0]}"
+				},
+				"summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
+				"issuetype": {
+				   "name": "Test Execution"
+				}  
+			},
+			"xrayFields": {
+					"testPlanKey": "${testPlan}"
+				}
+			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
+		)
+	}
+}
+
 def parseNUnitTestResults(filepath) {
 	int total
 	int pass
@@ -199,11 +201,14 @@ def importJenkinsConfigFile(fileId){
 	configFileProvider(
 			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
 		CONFIG = readJSON(file: BUILD_CONFIG)
-		def temp = CONFIG['PROJECT_LOCATION']
-		if(temp.endsWith('/')){
-			PROJECT_LOCATION = temp.substring(0, temp.length() - 1);
+		CSPROJ = CONFIG['CSPROJ']
+		if(CSPROJ.startsWith('/')) {
+			CSPROJ = CSPROJ.substring(1, CSPROJ.length())
 		}
-		CSPROJ = "${PROJECT_LOCATION}/${CONFIG['CSPROJ']}.csproj"
+		String[] paths = CSPROJ.split('/')
+		if(paths.length>0){
+			PROJECT_LOCATION = CSPROJ.replace(paths[paths.length-1],"")
+		}
 		REPO = CONFIG['REPO']
 		BRANCH = CONFIG['BRANCH']
 
