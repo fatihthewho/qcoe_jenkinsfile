@@ -5,6 +5,7 @@ def REPO
 def BRANCH
 def NUNIT_RESULTS
 def TESTNG_RESULTS
+def EMAIL_IDS
 def CURRENT_DIR_PATH // not working with out def
 
 def checkoutRepo(url,branch){
@@ -70,7 +71,7 @@ def sendEmail() {
 		}
 	def html = 'email-report_temp.html'
 	writeFile(file: "${html}", text: mail)
-		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '$email_recipients'
+		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '$EMAIL_IDS'
 	}
 }
 
@@ -211,7 +212,7 @@ def importJenkinsConfigFile(fileId){
 		}
 		REPO = CONFIG['REPO']
 		BRANCH = CONFIG['BRANCH']
-
+		EMAIL_IDS=CONFIG['EMAIL']
 		TESTNG_RESULTS="${PROJECT_LOCATION}/target/surefire-reports/testng-results.xml"
 	}
 }
