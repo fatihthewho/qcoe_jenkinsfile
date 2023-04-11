@@ -24,7 +24,7 @@ try {
                         echo "===Code Compile completed ========"
                     }
                     try {
-                        stage('Test') {
+                        stage('Execute Tests') {
                              jutils.executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
                             echo "===Test completed ========"
                         }
@@ -35,7 +35,7 @@ try {
                         status = false
                     }
                     try {
-                    stage("Artifacts") {
+                    stage("Archive Artifacts") {
                         echo "===Parsing NUit Results====="
                         jutils.parseNUnitTestResults("${env.WORKSPACE}/${PROJECT_LOCATION}TestResult.xml")
 
