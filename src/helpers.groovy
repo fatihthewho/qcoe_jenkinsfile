@@ -31,10 +31,14 @@ def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
 }
 
 def archiveCSharpArtifacts(){
+	echo "index.html archive"
 	archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_LOCATION}__test-results/index.html", followSymlinks: false
+	echo "NUnit Test Results"
 	nunit testResultsPattern: "${NUNIT_RESULTS}"
+	echo "index.html archive"
+	echo "Publish HTML"
 	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: "${PROJECT_LOCATION}__test-results",reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
-
+	echo "Publish HTML COMPLETED"
 }
 
 def updateXRayWithNUnit(testPlan){

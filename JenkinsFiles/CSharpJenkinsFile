@@ -10,36 +10,43 @@ try {
                     autils = load "${temp}/src/aws.groovy"
                     CURRENT_DIR_PATH = temp
                     jutils.importJenkinsConfigFile(params.config_file_id)
+                    echo "=========Master Setup Completed========="
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
 
-                        echo "===checking out project repo  ==============="
-                        jutils.checkoutRepo(REPO, BRANCH)
-                    }
-                    stage('Build') {
-                        jutils.compileCSharp("${CSPROJ}")
 
+                        jutils.checkoutRepo(REPO, BRANCH)
+                        echo "===project repo ceckout completed ========"
+                    }
+                    stage('Code Compile') {
+                        jutils.compileCSharp("${CSPROJ}")
+                        echo "===Code Compile completed ========"
                     }
                     try {
                         stage('Test') {
                              jutils.executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
+                            echo "===Test completed ========"
                         }
                     }
                     catch (Exception e) {
                         println(e)
+                        echo "===Test completed With Error========"
                         status = false
                     }
                     try {
                     stage("Artifacts") {
-
+                        echo "===Parsing NUit Results====="
                         jutils.parseNUnitTestResults("${NUNIT_RESULTS}")
+
                         echo "=======Artifacts stage ===="
                         jutils.archiveCSharpArtifacts()
-                    }
+                        echo "=======Artifacts stage completed ===="
+                       }
                     }
                     catch (Exception e) {
                         println(e)
+                        echo "=======Artifacts stage completed With Error===="
                         status = false
                     }
                     try {
@@ -50,6 +57,7 @@ try {
                     }
                     catch (Exception e) {
                         println(e)
+                        echo "=======XRay stage completed With Error===="
                         status = false
                     }
                 }
@@ -61,12 +69,14 @@ try {
                 }
                 catch (Exception e) {
                     println(e)
+                    echo "=======Email stage completed With Error===="
                     status = false
                 }
             }
 
 } catch (Exception ex) {
     println(ex)
+    echo "=======End completed With Error===="
     status = false
 } finally {
     if (!status) {
