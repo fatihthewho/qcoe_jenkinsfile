@@ -1,5 +1,4 @@
 def status = true
-def node_name = "selenium"
 
 try {
     node
@@ -10,17 +9,17 @@ try {
                     jutils = load "${temp}/src/helpers.groovy"
                     autils = load "${temp}/src/aws.groovy"
                     CURRENT_DIR_PATH = temp
-                    autils.stopAndWaitInstance("i-04dfb4e4c3e5b4b24")
-                    autils.startAndWaitInstance("i-04dfb4e4c3e5b4b24")
-
+                    jutils.importJenkinsConfigFile(params.config_file_id)
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
+
                         echo "===checking out project repo  ==============="
-                        jutils.checkoutRepo(params.repo_url, params.branch)
+                        jutils.checkoutRepo(REPO, BRANCH)
                     }
                     stage('Build') {
-                         bat 'dotnet build'
+                        jutils.compileCSharp("${CSPROJ}")
+
                     }
                     try {
                         stage('Test') {
@@ -34,7 +33,7 @@ try {
                     try {
                     stage("Artifacts") {
 
-                        jutils.parseNUnitTestResults("${env.WORKSPACE}/TestResult.xml")
+                        jutils.parseNUnitTestResults("${NUNIT_RESULTS}")
                         echo "=======Artifacts stage ===="
                         jutils.archiveCSharpArtifacts()
                     }
@@ -57,7 +56,7 @@ try {
                 try {
                     stage('Email') {
                         echo "=======EMail Stage ===="
-                        jutils.sendEmail(params.email_recipients)
+                        jutils.sendEmail()
                     }
                 }
                 catch (Exception e) {

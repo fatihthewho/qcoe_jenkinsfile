@@ -1,4 +1,10 @@
-EMAIL_INFO = [:] // not working with def
+TEST_SUMMARY = [:] // not working with def
+PROJECT_LOCATION
+CSPROJ
+REPO
+BRANCH
+NUNIT_RESULTS
+TESTNG_RESULTS
 def CURRENT_DIR_PATH // not working with out def
 
 def checkoutRepo(url,branch){
@@ -13,14 +19,19 @@ def checkoutRepo(url,branch){
 
 }
 def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
-	bat "nunit3-console TestAutomation.csproj --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
+	NUNIT_RESULTS = "${PROJECT_LOCATION}/TestResult.xml"
+	bat "nunit3-console ${CSPROJ} --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
+
 }
 
 def archiveCSharpArtifacts(){
-	archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\index.html', followSymlinks: false
-	nunit testResultsPattern: 'TestResult.xml'
-	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: '__test-results',reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
+	archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_LOCATION}/__test-results/index.html", followSymlinks: false
+	nunit testResultsPattern: "${NUNIT_RESULTS}"
+	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: "${PROJECT_LOCATION}/__test-results",reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
 
+}
+def compileCSharp(project){
+	bat "dotnet build ${project}"
 }
 
 def updateXRayWithTestNG(testPlan) {
@@ -64,21 +75,21 @@ def updateXRayWithNUnit(testPlan){
                 }"""
 	   echo "${temp}"
 
-		step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: 'TestResult.xml', importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
+		step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: "${NUNIT_RESULTS}", importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
                     "fields": {
                         "labels" : ["QCOE_Jenkins"]
                     }
                 }'''])
 	}
 }
-def sendEmail(emailRecipients) {
+def sendEmail() {
+	if ("${CONFIG['EMAIL']}" != 'NA' ){
 	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
-	for (element in EMAIL_INFO){
+	for (element in TEST_SUMMARY){
 		mail = mail.replace(element.key, element.value)
 		}
 	def html = 'email-report_temp.html'
 	writeFile(file: "${html}", text: mail)
-	if ("${emailRecipients}" != 'NA' ){
 		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '$email_recipients'
 	}
 }
@@ -109,17 +120,17 @@ def parseNUnitTestResults(filepath) {
 				switch (data[0]) {
 					case "total":
 						total = data[1].replace('\"',"").toInteger()
-						EMAIL_INFO["TOTAL_TESTS"] = total.toString()
+						TEST_SUMMARY["TOTAL_TESTS"] = total.toString()
 						break
 					case "passed":
 						pass = data[1].replace('\"',"").toInteger()
-						EMAIL_INFO["TESTS_PASSED"] = pass.toString()
+						TEST_SUMMARY["TESTS_PASSED"] = pass.toString()
 						break
 					case "failed":
-						EMAIL_INFO["TESTS_FAILED"] = data[1].replace('\"',"")
+						TEST_SUMMARY["TESTS_FAILED"] = data[1].replace('\"',"")
 						break
 					case "skipped":
-						EMAIL_INFO["TESTS_SKIPPED"] = data[1].replace('\"',"")
+						TEST_SUMMARY["TESTS_SKIPPED"] = data[1].replace('\"',"")
 						break
 					default:
 						break
@@ -127,8 +138,8 @@ def parseNUnitTestResults(filepath) {
 			}
 			def percentage = (pass / total ) * 100
 			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","%")
-			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
-			println(EMAIL_INFO)
+			TEST_SUMMARY["PASS_PERCENTAGE"]= formattedPercentage
+			println(TEST_SUMMARY)
 			break
 		}
 
@@ -151,26 +162,26 @@ def parseTestNGTestResults(filepath) {
 				switch (data[0]) {
 					case "passed":
 						pass = data[1].toInteger()
-						EMAIL_INFO["TESTS_PASSED"] = pass.toString()
+						TEST_SUMMARY["TESTS_PASSED"] = pass.toString()
 						break
 					case "failed":
 						fail= data[1].toInteger()
-						EMAIL_INFO["TESTS_FAILED"] = fail.toString()
+						TEST_SUMMARY["TESTS_FAILED"] = fail.toString()
 						break
 					case "skipped":
 						skip = data[1].replace('>',"").toInteger()
-						EMAIL_INFO["TESTS_SKIPPED"] = skip.toString()
+						TEST_SUMMARY["TESTS_SKIPPED"] = skip.toString()
 						break
 					default:
 						break
 				}
 			}
 			total= pass+fail+skip
-			EMAIL_INFO["TOTAL_TESTS"] = total.toString()
+			TEST_SUMMARY["TOTAL_TESTS"] = total.toString()
 			def percentage = (pass / total ) * 100
 			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","%")
-			EMAIL_INFO["PASS_PERCENTAGE"]= formattedPercentage
-			println(EMAIL_INFO)
+			TEST_SUMMARY["PASS_PERCENTAGE"]= formattedPercentage
+			println(TEST_SUMMARY)
 			break
 		}
 
@@ -182,5 +193,24 @@ def readPartOfFile(filePath,lines){
 	def cont = powershell returnStdout: true, script: """Get-Content ${filePath} | Select -First 10"""
 	return cont
 }
+
+def importJenkinsConfigFile(fileId){
+
+	configFileProvider(
+			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
+		CONFIG = readJSON(file: BUILD_CONFIG)
+		def temp = CONFIG['PROJECT_LOCATION']
+		if(temp.endsWith('/')){
+			PROJECT_LOCATION = str.substring(0, str.length() - 1);
+		}
+		CSPROJ = "${PROJECT_LOCATION}/${CONFIG['CSPROJ']}.csproj"
+		REPO = CONFIG['REPO']
+		BRANCH = CONFIG['BRANCH']
+
+		TESTNG_RESULTS="${PROJECT_LOCATION}/target/surefire-reports/testng-results.xml"
+	}
+}
+
+
 return this
 
