@@ -1,10 +1,10 @@
 TEST_SUMMARY = [:] // not working with def
-PROJECT_LOCATION
-CSPROJ
-REPO
-BRANCH
-NUNIT_RESULTS
-TESTNG_RESULTS
+def PROJECT_LOCATION
+def CSPROJ
+def REPO
+def BRANCH
+def NUNIT_RESULTS
+def TESTNG_RESULTS
 def CURRENT_DIR_PATH // not working with out def
 
 def checkoutRepo(url,branch){
@@ -201,7 +201,7 @@ def importJenkinsConfigFile(fileId){
 		CONFIG = readJSON(file: BUILD_CONFIG)
 		def temp = CONFIG['PROJECT_LOCATION']
 		if(temp.endsWith('/')){
-			PROJECT_LOCATION = str.substring(0, str.length() - 1);
+			PROJECT_LOCATION = temp.substring(0, temp.length() - 1);
 		}
 		CSPROJ = "${PROJECT_LOCATION}/${CONFIG['CSPROJ']}.csproj"
 		REPO = CONFIG['REPO']

@@ -9,7 +9,7 @@ try {
                     jutils = load "${temp}/src/helpers.groovy"
                     autils = load "${temp}/src/aws.groovy"
                     CURRENT_DIR_PATH = temp
-                    jutils.importJenkinsConfigFile(params.config_file_id)
+                    jutils.importJenkinsConfigFile(params.config_file_name)
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
