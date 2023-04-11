@@ -20,7 +20,7 @@ def checkoutRepo(url,branch){
 }
 
 def compileCSharp(project){
-	NUNIT_RESULTS = "${PROJECT_LOCATION}/TestResult.xml"
+	NUNIT_RESULTS = "${env.WORKSPACE}/${PROJECT_LOCATION}/TestResult.xml"
 	bat "dotnet build ${project}"
 }
 def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
@@ -55,7 +55,7 @@ def updateXRayWithNUnit(testPlan){
                 }"""
 	   echo "${temp}"
 
-		step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: "${NUNIT_RESULTS}", importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
+		step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: """${NUNIT_RESULTS}""", importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
                     "fields": {
                         "labels" : ["QCOE_Jenkins"]
                     }
