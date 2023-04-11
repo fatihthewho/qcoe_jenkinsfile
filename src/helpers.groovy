@@ -64,14 +64,15 @@ def updateXRayWithNUnit(testPlan){
 	}
 }
 def sendEmail() {
-	if ("${CONFIG['EMAIL']}" != 'NA' ){
+	if ("${EMAIL_IDS}" != 'NA' ){
+		echo "${EMAIL_IDS}"
 	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
 	for (element in TEST_SUMMARY){
 		mail = mail.replace(element.key, element.value)
 		}
 	def html = 'email-report_temp.html'
 	writeFile(file: "${html}", text: mail)
-		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: '$EMAIL_IDS'
+		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
 	}
 }
 
