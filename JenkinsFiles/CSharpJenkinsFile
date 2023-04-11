@@ -1,4 +1,5 @@
 def status = true
+def node_name = "selenium"
 
 try {
     node
@@ -7,7 +8,11 @@ try {
                     cleanWs()
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
+                    autils = load "${temp}/src/aws.groovy"
                     CURRENT_DIR_PATH = temp
+                    autils.stopAndWaitInstance("i-04dfb4e4c3e5b4b24")
+                    autils.startAndWaitInstance("i-04dfb4e4c3e5b4b24")
+
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
