@@ -37,7 +37,7 @@ try {
                     try {
                     stage("Artifacts") {
                         echo "===Parsing NUit Results====="
-                        jutils.parseNUnitTestResults("${NUNIT_RESULTS}")
+                        jutils.parseNUnitTestResults("${env.WORKSPACE}/${PROJECT_LOCATION}TestResult.xml")
 
                         echo "=======Artifacts stage ===="
                         jutils.archiveCSharpArtifacts()

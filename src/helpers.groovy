@@ -3,8 +3,6 @@ def PROJECT_LOCATION
 def CSPROJ
 def REPO
 def BRANCH
-def NUNIT_RESULTS
-def TESTNG_RESULTS
 def EMAIL_IDS
 def CURRENT_DIR_PATH // not working with out def
 
@@ -21,7 +19,6 @@ def checkoutRepo(url,branch){
 }
 
 def compileCSharp(project){
-	NUNIT_RESULTS = "${env.WORKSPACE}/${PROJECT_LOCATION}/TestResult.xml"
 	bat "dotnet build ${project}"
 }
 def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
@@ -34,8 +31,7 @@ def archiveCSharpArtifacts(){
 	echo "index.html archive"
 	archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_LOCATION}__test-results/index.html", followSymlinks: false
 	echo "NUnit Test Results"
-	nunit testResultsPattern: "${NUNIT_RESULTS}"
-	echo "index.html archive"
+	nunit testResultsPattern: "${PROJECT_LOCATION}TestResult.xml"
 	echo "Publish HTML"
 	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: "${PROJECT_LOCATION}__test-results",reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
 	echo "Publish HTML COMPLETED"
@@ -59,8 +55,9 @@ def updateXRayWithNUnit(testPlan){
 				}
                 }"""
 	   echo "${temp}"
+		def results = "${PROJECT_LOCATION}TestResult.xml"
 
-		step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: """${NUNIT_RESULTS}""", importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
+		step([$class: 'XrayImportBuilder', endpointName: '/nunit/multipart', importFilePath: """${results}""", importInParallel: 'false', importInfo: "${temp}", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'fileContent', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', testImportInfo: '''{
                     "fields": {
                         "labels" : ["QCOE_Jenkins"]
                     }
@@ -218,7 +215,6 @@ def importJenkinsConfigFile(fileId){
 		REPO = CONFIG['REPO']
 		BRANCH = CONFIG['BRANCH']
 		EMAIL_IDS=CONFIG['EMAIL']
-		TESTNG_RESULTS="${PROJECT_LOCATION}/target/surefire-reports/testng-results.xml"
 	}
 }
 
