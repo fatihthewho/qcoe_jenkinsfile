@@ -14,17 +14,12 @@ try {
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
-
-
                         jutils.checkoutRepo(REPO, BRANCH)
-                        std = powershell returnStdout: true, script: """(Get-ChildItem -Path ${env.WORKSPACE} -Recurse -Filter ${CSPROJ}).FullName"""
-                        echo "WS :${env.WORKSPACE}"
-                        PROJECT_LOCATION = std.trim().replace("\n", "").replace("${env.WORKSPACE}/","").replace(CSPROJ,"").
-                        echo "PL :${PROJECT_LOCATION}"
+
                         echo "===project repo ceckout completed ========"
                     }
                     stage('Code Compile') {
-                        jutils.compileCSharp("${PROJECT_LOCATION}${CSPROJ}")
+                        jutils.compileCSharp("${env.WORKSPACE}","${CSPROJ}")
                         echo "===Code Compile completed ========"
                     }
                     try {
