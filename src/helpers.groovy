@@ -23,7 +23,7 @@ def compileCSharp(project){
 }
 def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
 
-	bat "nunit3-console ${CSPROJ} --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
+	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
 
 }
 
@@ -205,13 +205,13 @@ def importJenkinsConfigFile(fileId){
 			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
 		CONFIG = readJSON(file: BUILD_CONFIG)
 		CSPROJ = CONFIG['CSPROJ']
-		if(CSPROJ.startsWith('/')) {
+/*		if(CSPROJ.startsWith('/')) {
 			CSPROJ = CSPROJ.substring(1, CSPROJ.length())
 		}
 		String[] paths = CSPROJ.split('/')
 		if(paths.length>0){
 			PROJECT_LOCATION = CSPROJ.replace(paths[paths.length-1],"")
-		}
+		}*/
 		REPO = CONFIG['REPO']
 		BRANCH = CONFIG['BRANCH']
 		EMAIL_IDS=CONFIG['EMAIL']
