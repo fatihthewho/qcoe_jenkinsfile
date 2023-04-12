@@ -7,12 +7,12 @@ try {
                     cleanWs()
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
-                    autils = load "${temp}/src/aws.groovy"
+                    //autils = load "${temp}/src/aws.groovy"
                     CURRENT_DIR_PATH = temp
-                    jutils.importJenkinsConfigFile(params.config_file_id)
+                    //jutils.importJenkinsConfigFile(params.config_file_id)
                     echo "=========Master Setup Completed========="
                 }
-                node("selenium") {
+              /*  node("selenium") {
                     stage('Checkout Repo') {
 
 
@@ -71,7 +71,7 @@ try {
                     println(e)
                     echo "=======Email stage completed With Error===="
                     status = false
-                }
+                }*/
             }
 
 } catch (Exception ex) {
