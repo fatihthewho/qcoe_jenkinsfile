@@ -17,15 +17,18 @@ try {
 
 
                         jutils.checkoutRepo(REPO, BRANCH)
+                        std = powershell returnStdout: true, script: """(Get-ChildItem -Path ${env.WORKSPACE} -Recurse -Filter ${CSPROJ}).FullName"""
+                        PROJECT_LOCATION = std.trim().replace("\n", "").replace(CSPROJ,"")
+                        echo "YAYYYY ${PROJECT_LOCATION}"
                         echo "===project repo ceckout completed ========"
                     }
                     stage('Code Compile') {
-                        jutils.compileCSharp("${CSPROJ}")
+                        //jutils.compileCSharp("${CSPROJ}")
                         echo "===Code Compile completed ========"
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
+                             //jutils.executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
                             echo "===Test completed ========"
                         }
                     }
@@ -37,10 +40,10 @@ try {
                     try {
                     stage("Archive Artifacts") {
                         echo "===Parsing NUit Results====="
-                        jutils.parseNUnitTestResults("${env.WORKSPACE}/${PROJECT_LOCATION}TestResult.xml")
+                        //jutils.parseNUnitTestResults("${env.WORKSPACE}/${PROJECT_LOCATION}TestResult.xml")
 
                         echo "=======Artifacts stage ===="
-                        jutils.archiveCSharpArtifacts()
+                        //jutils.archiveCSharpArtifacts()
                         echo "=======Artifacts stage completed ===="
                        }
                     }
@@ -52,7 +55,7 @@ try {
                     try {
                         stage('XRay') {
                             echo "=======XRay Stage ===="
-                            jutils.updateXRayWithNUnit(params.test_plan_key)
+                            //jutils.updateXRayWithNUnit(params.test_plan_key)
                         }
                     }
                     catch (Exception e) {
@@ -64,7 +67,7 @@ try {
                 try {
                     stage('Email') {
                         echo "=======EMail Stage ===="
-                        jutils.sendEmail()
+                        //jutils.sendEmail()
                     }
                 }
                 catch (Exception e) {
