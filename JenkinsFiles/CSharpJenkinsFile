@@ -7,12 +7,12 @@ try {
                     cleanWs()
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
-                    //autils = load "${temp}/src/aws.groovy"
+                    autils = load "${temp}/src/aws.groovy"
                     CURRENT_DIR_PATH = temp
-                    //jutils.importJenkinsConfigFile(params.config_file_id)
+                    jutils.importJenkinsConfigFile(params.config_file_id)
                     echo "=========Master Setup Completed========="
                 }
-              /*  node("selenium") {
+                node("selenium") {
                     stage('Checkout Repo') {
 
 
@@ -71,7 +71,7 @@ try {
                     println(e)
                     echo "=======Email stage completed With Error===="
                     status = false
-                }*/
+                }
             }
 
 } catch (Exception ex) {
@@ -86,9 +86,16 @@ try {
 }
 
 def getCurrentDirectory() {
-    def temp = "${env.WORKSPACE}@script"
-    def std = powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
+    def current = "${env.WORKSPACE}@script"
+    def std = powershell returnStdout: true, script: """(Get-ChildItem -Path $current -Recurse -Filter "*tmp").FullName"""
     temp = std.trim().replace("\n", "")
     echo "modified:${temp}"
-    return temp.replace('@tmp', '')
+
+    def modified = temp.replace('@tmp', '').trim()
+    if(modified.length()>0){
+        return modified
+    }
+    else{
+        return current
+    }
 }
