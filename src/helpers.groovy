@@ -20,7 +20,7 @@ def checkoutRepo(url,branch){
 
 def compileCSharp(folder,project){
 	std = powershell returnStdout: true, script: """(Get-ChildItem -Path ${folder} -Recurse -Filter ${project}).FullName"""
-	PROJECT_LOCATION = std.trim().replace("\n", "").replace("${folder}/","").replace(project,"")
+	PROJECT_LOCATION = std.trim().replace("\n", "").replace("${folder}\\","").replace(project,"")
 	echo "PL :${PROJECT_LOCATION}"
 	bat "dotnet build ${PROJECT_LOCATION}${project}"
 }
