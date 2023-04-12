@@ -205,13 +205,6 @@ def importJenkinsConfigFile(fileId){
 			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
 		CONFIG = readJSON(file: BUILD_CONFIG)
 		CSPROJ = CONFIG['CSPROJ']
-/*		if(CSPROJ.startsWith('/')) {
-			CSPROJ = CSPROJ.substring(1, CSPROJ.length())
-		}
-		String[] paths = CSPROJ.split('/')
-		if(paths.length>0){
-			PROJECT_LOCATION = CSPROJ.replace(paths[paths.length-1],"")
-		}*/
 		REPO = CONFIG['REPO']
 		BRANCH = CONFIG['BRANCH']
 		EMAIL_IDS=CONFIG['EMAIL']

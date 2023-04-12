@@ -18,7 +18,9 @@ try {
 
                         jutils.checkoutRepo(REPO, BRANCH)
                         std = powershell returnStdout: true, script: """(Get-ChildItem -Path ${env.WORKSPACE} -Recurse -Filter ${CSPROJ}).FullName"""
-                        PROJECT_LOCATION = std.trim().replace("\n", "").replace(CSPROJ,"")
+                        echo "WS :${env.WORKSPACE}"
+                        PROJECT_LOCATION = std.trim().replace("\n", "").replace("${env.WORKSPACE}/","").replace(CSPROJ,"").
+                        echo "PL :${PROJECT_LOCATION}"
                         echo "===project repo ceckout completed ========"
                     }
                     stage('Code Compile') {
