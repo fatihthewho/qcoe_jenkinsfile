@@ -21,7 +21,10 @@ def stopAndWaitInstance(instanceID, region='us-east-1') {
 }
 def getInstanceID(ip, region='us-east-1') {
     echo "getting instacne id for ${ip}"
-    run("aws ec2 describe-instances --filter Name=private-ip-address,Values=${ip} --query 'Reservations[].Instances[].InstanceId' --output text")
+    def temp = run("""aws ec2 describe-instances --filter Name=private-ip-address,Values=${ip} --query "Reservations[].Instances[].InstanceId" --output text""")
+    String[] id = temp.split("\n");
+      retutn id[id.length-1]
+
 }
 
 
@@ -34,7 +37,7 @@ def run(command) {
     } else {
         result = sh(script: "${command}", returnStdout: true).trim()
     }
-    return result
+    return result.replace(command,"")
 }
 /*
 
