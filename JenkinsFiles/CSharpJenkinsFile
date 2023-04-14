@@ -17,7 +17,10 @@ try {
                     if(vm.equals('Select'){
                         throw new Exception("select test_execution_vm")
                     }
-                    if(!vm.equals('qcoe_selenium_grid')){
+                    if(vm.equals('qcoe_selenium_grid')){
+
+                    }
+                    else{
                         def instanceId= autils.getInstanceID(vm)
                         autils.startAndWaitInstance()
                         jutils.setHubUrl(vm)
