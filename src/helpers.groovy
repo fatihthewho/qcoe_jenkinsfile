@@ -5,6 +5,7 @@ def REPO
 def BRANCH
 def EMAIL_IDS
 def CURRENT_DIR_PATH // not working with out def
+HUB_URL="http://10.45.139.112:4444/"
 
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
@@ -28,6 +29,10 @@ def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
 
 	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
 
+}
+def setHubUrl(ip) {
+
+	HUB_URL="http://${ip}:4444/"
 }
 
 def archiveCSharpArtifacts(){

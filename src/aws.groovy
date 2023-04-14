@@ -19,6 +19,12 @@ def stopAndWaitInstance(instanceID, region='us-east-1') {
     echo "Wait for instance ${instanceID} to stop"
     run("aws ec2 wait instance-stopped --instance-ids ${instanceID} --region ${region}")
 }
+def getInstanceID(ip, region='us-east-1') {
+    echo "getting instacne id for ${ip}"
+    run("aws ec2 describe-instances --filter Name=private-ip-address,Values=${ip} --query 'Reservations[].Instances[].InstanceId' --output text")
+}
+
+
 
 def run(command) {
     echo "${command}"

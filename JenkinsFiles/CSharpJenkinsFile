@@ -12,10 +12,20 @@ try {
                     jutils.importJenkinsConfigFile(params.config_file_id)
                     echo "=========Master Setup Completed========="
                 }
+                stage('Start Grid') {
+                    def vm = params.test_execution_vm
+                    if(vm.equals('Select'){
+                        throw new Exception("select test_execution_vm")
+                    }
+                    if(!vm.equals('qcoe_selenium_grid')){
+                        def instanceId= autils.getInstanceID(vm)
+                        autils.startAndWaitInstance()
+                        jutils.setHubUrl(vm)
+                    }
+                }
                 node("selenium") {
                     stage('Checkout Repo') {
                         jutils.checkoutRepo(REPO, BRANCH)
-
                         echo "===project repo ceckout completed ========"
                     }
                     stage('Code Compile') {
@@ -24,7 +34,7 @@ try {
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.test_selection_criteria)
+                             jutils.executeNUnitTests(params.test_selection_criteria,params.environment, params.browser,params.use_selenium_grid, params.no_of_parallel_threads )
                             echo "===Test completed ========"
                         }
                     }
