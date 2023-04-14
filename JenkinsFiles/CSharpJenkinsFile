@@ -12,7 +12,7 @@ try {
                     jutils.importJenkinsConfigFile(params.config_file_id)
                     echo "=========Master Setup Completed========="
                 }
-                stage('Start Grid') {
+                stage('Grid Setup') {
                     def vm = params.test_execution_vm
                     if(vm.equals('Select')){
                         throw new Exception("select test_execution_vm")
@@ -22,7 +22,8 @@ try {
                     }
                     else{
                         def instanceId= autils.getInstanceID(vm)
-                        autils.startAndWaitInstance()
+                        autils.stopAndWaitInstance(instanceId)
+                        autils.startAndWaitInstance(instanceId)
                         jutils.setHubUrl(vm)
                     }
                 }
@@ -47,14 +48,14 @@ try {
                         status = false
                     }
                     try {
-                    stage("Archive Artifacts") {
-                        echo "===Parsing NUit Results====="
-                        jutils.parseNUnitTestResults("${PROJECT_LOCATION}TestResult.xml")
+                        stage("Archive Artifacts") {
+                            echo "===Parsing NUit Results====="
+                            jutils.parseNUnitTestResults("${PROJECT_LOCATION}TestResult.xml")
 
-                        echo "=======Artifacts stage ===="
-                        jutils.archiveCSharpArtifacts()
-                        echo "=======Artifacts stage completed ===="
-                       }
+                            echo "=======Artifacts stage ===="
+                            jutils.archiveCSharpArtifacts()
+                            echo "=======Artifacts stage completed ===="
+                           }
                     }
                     catch (Exception e) {
                         println(e)
