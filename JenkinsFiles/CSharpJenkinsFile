@@ -14,7 +14,7 @@ try {
                 }
                 stage('Start Grid') {
                     def vm = params.test_execution_vm
-                    if(vm.equals('Select'){
+                    if(vm.equals('Select')){
                         throw new Exception("select test_execution_vm")
                     }
                     if(vm.equals('qcoe_selenium_grid')){
