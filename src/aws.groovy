@@ -23,8 +23,7 @@ def getInstanceID(ip, region='us-east-1') {
     echo "getting instacne id for ${ip}"
     def temp = run("""aws ec2 describe-instances --filter Name=private-ip-address,Values=${ip} --query "Reservations[].Instances[].InstanceId" --output text""")
     String[] id = temp.split("\n");
-      return id[id.length-1]
-
+    return id[id.length-1].trim()
 }
 
 
