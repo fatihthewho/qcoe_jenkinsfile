@@ -227,7 +227,7 @@ def initialize(fileId){
 		BRANCH = CONFIG['BRANCH']
 		EMAIL_IDS=CONFIG['EMAIL']
 	}
-	autils = load "${temp}/src/aws.groovy"
+	autils = load "${CURRENT_DIR_PATH}/src/aws.groovy"
 
 }
 def shutdown(ip) {
