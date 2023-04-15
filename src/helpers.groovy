@@ -129,6 +129,7 @@ def updateXRayWithTestNG(testPlan) {
 }
 
 def parseNUnitTestResults(filepath) {
+	if (fileExists('file')) {
 	int total
 	int pass
 	String partOfFile = readPartOfFile(filepath,10)
@@ -166,6 +167,10 @@ def parseNUnitTestResults(filepath) {
 			break
 		}
 
+	}
+	}
+	else {
+		throw new Exception("NUnit Results file not found.")
 	}
 
 }
