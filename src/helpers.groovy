@@ -233,7 +233,7 @@ def initialize(fileId){
 def shutdown(ip) {
 	if(!ip.equals('qcoe_selenium_grid')){
 		def instanceId= autils.getInstanceID(ip)
-		autils.startAndWaitInstance(instanceId)
+		autils.stopAndWaitInstance(instanceId)
 	}
 }
 
