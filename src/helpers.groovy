@@ -41,7 +41,7 @@ def compileCSharp(folder,project){
 }
 def executeNUnitTests(testSelection,environment,browser,threads) {
 
-	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${environment} --tp:browser=${browser} --workers=${threads} --tp:hubUrl=${HUB_URL} ${testSelection}"
+	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${environment} --tp:browser=${browser} --workers=${threads} --tp:gridUrl=${HUB_URL} ${testSelection}"
 
 }
 
