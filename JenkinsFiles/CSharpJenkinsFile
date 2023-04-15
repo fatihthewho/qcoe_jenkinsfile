@@ -1,5 +1,4 @@
 def status = true
-
 try {
     node
             {
@@ -12,8 +11,7 @@ try {
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {
-                    def vm = params.test_execution_vm
-                    jutils.setupGrid(vm)
+                    jutils.setupGrid(params.test_execution_vm)
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
@@ -90,6 +88,11 @@ try {
     echo "=======End completed With Error===="
     status = false
 } finally {
+    node {
+        stage('Cleanup') {
+            jutils.shutdown(params.test_execution_vm);
+        }
+    }
     if (!status) {
         currentBuild.result = 'FAILURE'
     }

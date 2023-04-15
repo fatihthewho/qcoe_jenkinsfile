@@ -7,6 +7,20 @@ def EMAIL_IDS
 def CURRENT_DIR_PATH // not working with out def
 def HUB_URL
 
+def setupGrid(ip) {
+	if(ip.equals('Select')){
+		throw new Exception("select test_execution_vm")
+	}
+	if(ip.equals('qcoe_selenium_grid')){
+		HUB_URL="http://10.45.139.112:4444/"
+	}
+	else{
+		def instanceId= autils.getInstanceID(ip)
+		autils.startAndWaitInstance(instanceId)
+		HUB_URL="http://${ip}:4444/"
+	}
+}
+
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
 	checkout([$class: 'GitSCM',
@@ -28,20 +42,6 @@ def compileCSharp(folder,project){
 def executeNUnitTests(testSelection,environment,browser,threads) {
 
 	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${environment} --tp:browser=${browser} --workers=${threads} --tp:hubUrl=${HUB_URL} ${testSelection}"
-
-}
-def setupGrid(ip) {
-	if(ip.equals('Select')){
-		throw new Exception("select test_execution_vm")
-	}
-	if(ip.equals('qcoe_selenium_grid')){
-		HUB_URL="http://10.45.139.112:4444/"
-	}
-	else{
-		def instanceId= autils.getInstanceID(ip)
-		autils.startAndWaitInstance(instanceId)
-		HUB_URL="http://${ip}:4444/"
-	}
 
 }
 
@@ -219,8 +219,6 @@ def readPartOfFile(filePath,lines){
 
 def initialize(fileId){
 	echo "Triggered By: ${currentBuild.getBuildCauses().get(0)}"
-	echo "=================== Loading the files ==========================================="
-	autils = load "${CURRENT_DIR_PATH}\\src\\aws.groovy"
 	configFileProvider(
 			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
 		CONFIG = readJSON(file: BUILD_CONFIG)
@@ -229,7 +227,15 @@ def initialize(fileId){
 		BRANCH = CONFIG['BRANCH']
 		EMAIL_IDS=CONFIG['EMAIL']
 	}
+	autils = load "${temp}/src/aws.groovy"
 
 }
+def shutdown(ip) {
+	if(!ip.equals('qcoe_selenium_grid')){
+		def instanceId= autils.getInstanceID(ip)
+		autils.startAndWaitInstance(instanceId)
+	}
+}
+
 return this
 
