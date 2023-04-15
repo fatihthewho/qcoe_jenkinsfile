@@ -91,7 +91,7 @@ def sendEmail() {
 		}
 	def html = 'email-report_temp.html'
 	writeFile(file: "${html}", text: mail)
-		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
+	emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
 	}
 }
 

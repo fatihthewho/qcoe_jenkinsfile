@@ -70,17 +70,6 @@ try {
                     echo "=======Email stage completed With Error===="
                     status = false
                 }
-                try {
-                    stage('Email') {
-                        echo "=======EMail Stage ===="
-                        jutils.sendEmail()
-                    }
-                }
-                catch (Exception e) {
-                    println(e)
-                    echo "=======Email stage completed With Error===="
-                    status = false
-                }
             }
 
 } catch (Exception ex) {
