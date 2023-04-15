@@ -38,7 +38,7 @@ def setupGrid(ip) {
 		HUB_URL="http://10.45.139.112:4444/"
 	}
 	else{
-		def instanceId= autils.getInstanceID(vm)
+		def instanceId= autils.getInstanceID(ip)
 		autils.startAndWaitInstance(instanceId)
 		HUB_URL="http://${ip}:4444/"
 	}
