@@ -14,18 +14,7 @@ try {
                 }
                 stage('Grid Setup') {
                     def vm = params.test_execution_vm
-                    if(vm.equals('Select')){
-                        throw new Exception("select test_execution_vm")
-                    }
-                    if(vm.equals('qcoe_selenium_grid')){
-
-                    }
-                    else{
-                        def instanceId= autils.getInstanceID(vm)
-                        autils.stopAndWaitInstance(instanceId)
-                        autils.startAndWaitInstance(instanceId)
-                        jutils.setHubUrl(vm)
-                    }
+                    jutils.setupGrid(vm)
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
@@ -38,7 +27,7 @@ try {
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params.test_selection_criteria,params.environment, params.browser,params.use_selenium_grid, params.no_of_parallel_threads )
+                             jutils.executeNUnitTests(params.test_selection_criteria,params.environment, params.browser, params.no_of_parallel_threads )
                             echo "===Test completed ========"
                         }
                     }
@@ -51,7 +40,6 @@ try {
                         stage("Archive Artifacts") {
                             echo "===Parsing NUit Results====="
                             jutils.parseNUnitTestResults("${PROJECT_LOCATION}TestResult.xml")
-
                             echo "=======Artifacts stage ===="
                             jutils.archiveCSharpArtifacts()
                             echo "=======Artifacts stage completed ===="
@@ -85,6 +73,17 @@ try {
                     echo "=======Email stage completed With Error===="
                     status = false
                 }
+                try {
+                    stage('Email') {
+                        echo "=======EMail Stage ===="
+                        jutils.sendEmail()
+                    }
+                }
+                catch (Exception e) {
+                    println(e)
+                    echo "=======Email stage completed With Error===="
+                    status = false
+                }
             }
 
 } catch (Exception ex) {
@@ -103,7 +102,6 @@ def getCurrentDirectory() {
     def std = powershell returnStdout: true, script: """(Get-ChildItem -Path $current -Recurse -Filter "*tmp").FullName"""
     temp = std.trim().replace("\n", "")
     echo "modified:${temp}"
-
     def modified = temp.replace('@tmp', '').trim()
     if(modified.length()>0){
         return modified

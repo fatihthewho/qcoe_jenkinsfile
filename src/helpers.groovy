@@ -5,7 +5,7 @@ def REPO
 def BRANCH
 def EMAIL_IDS
 def CURRENT_DIR_PATH // not working with out def
-HUB_URL="http://10.45.139.112:4444/"
+def HUB_URL
 
 def checkoutRepo(url,branch){
 	echo "checking out ${url} ${branch} "
@@ -25,14 +25,24 @@ def compileCSharp(folder,project){
 	echo "PL :${PROJECT_LOCATION}"
 	bat "dotnet build ${PROJECT_LOCATION}${project}"
 }
-def executeNUnitTests(threads,isRemote,browser,environment,testSelection) {
+def executeNUnitTests(testSelection,environment,browser,threads) {
 
-	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --workers=${threads} --tp:remote=${isRemote} --tp:browser=${browser} --tp:env=${environment} ${testSelection}"
+	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${environment} --tp:browser=${browser} --workers=${threads} --tp:hubUrl=${HUB_URL} ${testSelection}"
 
 }
-def setHubUrl(ip) {
+def setupGrid(ip) {
+	if(ip.equals('Select')){
+		throw new Exception("select test_execution_vm")
+	}
+	if(ip.equals('qcoe_selenium_grid')){
+		HUB_URL="http://10.45.139.112:4444/"
+	}
+	else{
+		def instanceId= autils.getInstanceID(vm)
+		autils.startAndWaitInstance(instanceId)
+		HUB_URL="http://${ip}:4444/"
+	}
 
-	HUB_URL="http://${ip}:4444/"
 }
 
 def archiveCSharpArtifacts(){
@@ -218,7 +228,11 @@ def importJenkinsConfigFile(fileId){
 		EMAIL_IDS=CONFIG['EMAIL']
 	}
 }
-
-
+def init() {
+	echo "Triggered By: ${currentBuild.getBuildCauses().get(0)}"
+	echo "=================== Loading the files ==========================================="
+	autils = load "${CURRENT_DIR_PATH}\\aws.groovy"
+}
+init()
 return this
 
