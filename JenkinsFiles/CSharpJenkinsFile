@@ -8,7 +8,7 @@ try {
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
                     CURRENT_DIR_PATH = temp
-                    jutils.importJenkinsConfigFile(params.config_file_id)
+                    jutils.initialize(params.config_file_id)
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {

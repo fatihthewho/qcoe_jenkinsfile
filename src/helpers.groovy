@@ -217,8 +217,10 @@ def readPartOfFile(filePath,lines){
 	return cont
 }
 
-def importJenkinsConfigFile(fileId){
-
+def initialize(fileId){
+	echo "Triggered By: ${currentBuild.getBuildCauses().get(0)}"
+	echo "=================== Loading the files ==========================================="
+	autils = load "${CURRENT_DIR_PATH}\\src\\aws.groovy"
 	configFileProvider(
 			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
 		CONFIG = readJSON(file: BUILD_CONFIG)
@@ -227,12 +229,7 @@ def importJenkinsConfigFile(fileId){
 		BRANCH = CONFIG['BRANCH']
 		EMAIL_IDS=CONFIG['EMAIL']
 	}
+
 }
-def init() {
-	echo "Triggered By: ${currentBuild.getBuildCauses().get(0)}"
-	echo "=================== Loading the files ==========================================="
-	autils = load "${CURRENT_DIR_PATH}\\aws.groovy"
-}
-init()
 return this
 
