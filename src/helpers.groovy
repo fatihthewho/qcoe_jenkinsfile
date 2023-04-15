@@ -129,45 +129,45 @@ def updateXRayWithTestNG(testPlan) {
 }
 
 def parseNUnitTestResults(filepath) {
-	if (fileExists('file')) {
-	int total
-	int pass
-	String partOfFile = readPartOfFile(filepath,10)
-	echo "${partOfFile}"
-	def lines = partOfFile.split('\n')
-	for (element in lines) {
-		if (element.startsWith("<test-run")){
-			element = element.replace('\"',"")
-			String[] temp=element.split(" ")
-			for(item in temp) {
-				String[] data = item.split("=")
-				switch (data[0]) {
-					case "total":
-						total = data[1].replace('\"',"").toInteger()
-						TEST_SUMMARY["TOTAL_TESTS"] = total.toString()
-						break
-					case "passed":
-						pass = data[1].replace('\"',"").toInteger()
-						TEST_SUMMARY["TESTS_PASSED"] = pass.toString()
-						break
-					case "failed":
-						TEST_SUMMARY["TESTS_FAILED"] = data[1].replace('\"',"")
-						break
-					case "skipped":
-						TEST_SUMMARY["TESTS_SKIPPED"] = data[1].replace('\"',"")
-						break
-					default:
-						break
+	if (fileExists(filepath)) {
+		int total
+		int pass
+		String partOfFile = readPartOfFile(filepath,10)
+		echo "${partOfFile}"
+		def lines = partOfFile.split('\n')
+		for (element in lines) {
+			if (element.startsWith("<test-run")){
+				element = element.replace('\"',"")
+				String[] temp=element.split(" ")
+				for(item in temp) {
+					String[] data = item.split("=")
+					switch (data[0]) {
+						case "total":
+							total = data[1].replace('\"',"").toInteger()
+							TEST_SUMMARY["TOTAL_TESTS"] = total.toString()
+							break
+						case "passed":
+							pass = data[1].replace('\"',"").toInteger()
+							TEST_SUMMARY["TESTS_PASSED"] = pass.toString()
+							break
+						case "failed":
+							TEST_SUMMARY["TESTS_FAILED"] = data[1].replace('\"',"")
+							break
+						case "skipped":
+							TEST_SUMMARY["TESTS_SKIPPED"] = data[1].replace('\"',"")
+							break
+						default:
+							break
+					}
 				}
+				def percentage = (pass / total ) * 100
+				def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","%")
+				TEST_SUMMARY["PASS_PERCENTAGE"]= formattedPercentage
+				println(TEST_SUMMARY)
+				break
 			}
-			def percentage = (pass / total ) * 100
-			def formattedPercentage = String.format("%.1f%%", percentage).replace(".0%","%")
-			TEST_SUMMARY["PASS_PERCENTAGE"]= formattedPercentage
-			println(TEST_SUMMARY)
-			break
-		}
 
-	}
+		}
 	}
 	else {
 		throw new Exception("NUnit Results file not found.")

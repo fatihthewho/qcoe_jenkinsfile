@@ -59,17 +59,6 @@ try {
                         status = false
                     }
                 }
-                try {
-                    stage('Email') {
-                        echo "=======EMail Stage ===="
-                        jutils.sendEmail()
-                    }
-                }
-                catch (Exception e) {
-                    println(e)
-                    echo "=======Email stage completed With Error===="
-                    status = false
-                }
             }
 
 } catch (Exception ex) {
@@ -77,14 +66,33 @@ try {
     echo "=======End completed With Error===="
     status = false
 } finally {
-    node {
-        stage('Cleanup') {
-            jutils.shutdown(params.test_execution_vm);
-        }
-    }
     if (!status) {
         currentBuild.result = 'FAILURE'
     }
+    node {
+        stage('Cleanup') {
+            try {
+                echo "=======Shutdown AWS Instance===="
+                jutils.shutdown(params.test_execution_vm);
+            }
+            catch (Exception e){
+                echo "=======Shutdown AWS Failed ===="
+                currentBuild.result = 'FAILURE'
+            }
+
+        }
+        stage('Email') {
+            try {
+                echo "=======EMail Stage ===="
+                jutils.sendEmail()
+            }
+            catch (Exception e){
+                echo "=======Sending Email Failed ===="
+                currentBuild.result = 'FAILURE'
+            }
+        }
+    }
+
     echo "===Done==="
 }
 
