@@ -47,15 +47,15 @@ def executeNUnitTests(testSelection,environment,browser,threads) {
 
 def archiveCSharpArtifacts(){
 	echo "index.html archive"
-	archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_LOCATION}__test-results/index.html", followSymlinks: false
-	echo "NUnit Test Results"
-	nunit testResultsPattern: "${PROJECT_LOCATION}TestResult.xml"
+	archiveArtifacts allowEmptyArchive: false, artifacts: "${PROJECT_LOCATION}__test-results/index.html", followSymlinks: false
 	echo "Publish HTML"
 	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: "${PROJECT_LOCATION}__test-results",reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
 	echo "Publish HTML COMPLETED"
 }
 
 def updateXRayWithNUnit(testPlan){
+	echo "NUnit Test Results"
+	nunit testResultsPattern: "${PROJECT_LOCATION}TestResult.xml"
 	if ("${testPlan}" != 'NA') {
 		echo "${testPlan}"
 	def temp = """{
@@ -101,12 +101,12 @@ def executeMavenTests(threads, isRemote, browser, environment, retries, xmlFileN
 }
 
 def archiveJavaArtifacts() {
-	archiveArtifacts allowEmptyArchive: true, artifacts: '__test-results\\Report.html', followSymlinks: false
-	testNG showFailedBuilds: true
+	archiveArtifacts allowEmptyArchive: false, artifacts: '__test-results\\Report.html', followSymlinks: false
 	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
 
 }
 def updateXRayWithTestNG(testPlan) {
+	testNG showFailedBuilds: true
 	if ("${testPlan}" != 'NA' ){
 		echo "${testPlan}"
 		step(
