@@ -1,4 +1,5 @@
 def status = true
+def infraError = true
 try {
     node
             {
@@ -17,6 +18,7 @@ try {
                     stage('Checkout Repo') {
                         jutils.checkoutRepo(REPO, BRANCH)
                         echo "===project repo ceckout completed ========"
+                        infraError =  false
                     }
                     stage('Code Compile') {
                         jutils.compileCSharp("${env.WORKSPACE}","${CSPROJ}")
@@ -78,13 +80,15 @@ try {
             catch (Exception e){
                 echo "=======Shutdown AWS Failed ===="
                 currentBuild.result = 'FAILURE'
+                infraError = true
+
             }
 
         }
         stage('Email') {
             try {
                 echo "=======EMail Stage ===="
-                jutils.sendEmail()
+                jutils.sendEmail(infraError)
             }
             catch (Exception e){
                 echo "=======Sending Email Failed ===="
