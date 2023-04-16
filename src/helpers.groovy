@@ -1,12 +1,15 @@
-TEST_SUMMARY = [:] // not working with def
+// not working with def
+TEST_SUMMARY = [:]
+QCoE_Mail="venkata.kunta"
+// not working with out def
 def PROJECT_LOCATION
 def CSPROJ
 def REPO
 def BRANCH
 def EMAIL_IDS
-def CURRENT_DIR_PATH // not working with out def
+def CURRENT_DIR_PATH
 def HUB_URL
-def QCoE_Mail="venkata.kunta"
+
 
 def setupGrid(ip) {
 	if(ip.equals('Select')){
@@ -35,15 +38,25 @@ def checkoutRepo(url,branch){
 }
 
 def compileCSharp(folder,project){
+	setProjectLocation(folder,project)
+	bat "dotnet build ${PROJECT_LOCATION}${project}"
+}
+def compileMavenProject(folder,project){
+	setProjectLocation(folder,project)
+	bat 'mvn clean compile'
+}
+def setProjectLocation(folder,project){
 	std = powershell returnStdout: true, script: """(Get-ChildItem -Path ${folder} -Recurse -Filter ${project}).FullName"""
 	PROJECT_LOCATION = std.trim().replace("\n", "").replace("${folder}\\","").replace(project,"")
 	echo "PL :${PROJECT_LOCATION}"
-	bat "dotnet build ${PROJECT_LOCATION}${project}"
 }
-def executeNUnitTests(testSelection,environment,browser,threads) {
+def executeNUnitTests(environment,browser,threads,testSelection) {
 
-	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${environment} --tp:browser=${browser} --workers=${threads} --tp:gridUrl=${HUB_URL} ${testSelection}"
+	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${environment} --tp:browser=${browser} --tp:gridUrl=${HUB_URL} --workers=${threads}  ${testSelection}"
 
+}
+def executeMavenTests(environment, browser, threads, retries, xmlFileName) {
+	bat "mvn test -Denv=${environment} -DBrowser=${browser} -DgridUrl=${HUB_URL} -DthreadCount=${threads} -Dretry=${retries} -DsuiteFile=${xmlFileName}"
 }
 
 def archiveCSharpArtifacts(){
@@ -53,7 +66,11 @@ def archiveCSharpArtifacts(){
 	publishHTML([allowMissing: false,alwaysLinkToLastBuild: false,keepAll: false,reportDir: "${PROJECT_LOCATION}__test-results",reportFiles: 'index.html',reportName: 'Test Summary',reportTitles: ''])
 	echo "Publish HTML COMPLETED"
 }
+def archiveJavaArtifacts() {
+	archiveArtifacts allowEmptyArchive: false, artifacts: '__test-results\\Report.html', followSymlinks: false
+	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
 
+}
 def updateXRayWithNUnit(testPlan){
 	echo "NUnit Test Results"
 	nunit testResultsPattern: "${PROJECT_LOCATION}TestResult.xml"
@@ -83,34 +100,8 @@ def updateXRayWithNUnit(testPlan){
                 }'''])
 	}
 }
-def sendEmail(infraError) {
-	if ("${EMAIL_IDS}" != 'NA' ){
-		echo "${EMAIL_IDS}"
-	String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
-	for (element in TEST_SUMMARY){
-		mail = mail.replace(element.key, element.value)
-		}
-	def html = 'email-report_temp.html'
-	writeFile(file: "${html}", text: mail)
-	emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
-	if(infraError) {
-
-		emailext body: readFile("${html}"), mimeType: 'text/html', subject: 'Setup Failures.Check the Jenkins Logs', to: """${QCoE_Mail}"""
-	}
-	}
-}
-
-def executeMavenTests(threads, isRemote, browser, environment, retries, xmlFileName) {
-
-	bat "mvn test -DthreadCount=${threads} -Dremote=${isRemote} -DBrowser=${browser} -Denv=${environment} -Dretry=${retries} -DsuiteFile=${xmlFileName}"
-}
-
-def archiveJavaArtifacts() {
-	archiveArtifacts allowEmptyArchive: false, artifacts: '__test-results\\Report.html', followSymlinks: false
-	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
-
-}
 def updateXRayWithTestNG(testPlan) {
+	echo "TestNG Test Results"
 	testNG showFailedBuilds: true
 	if ("${testPlan}" != 'NA' ){
 		echo "${testPlan}"
@@ -132,6 +123,26 @@ def updateXRayWithTestNG(testPlan) {
 		)
 	}
 }
+def sendEmail(infraError) {
+	if ("${EMAIL_IDS}" != 'NA' ){
+		echo "${EMAIL_IDS}"
+		String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
+		for (element in TEST_SUMMARY){
+			mail = mail.replace(element.key, element.value)
+		}
+		def html = 'email-report_temp.html'
+		writeFile(file: "${html}", text: mail)
+		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
+		if(infraError) {
+		emailext body: readFile("${html}"), mimeType: 'text/html', subject: 'Setup Failures in $PROJECT_NAME', to: """${QCoE_Mail}"""
+		}
+	}
+}
+
+
+
+
+
 
 def parseNUnitTestResults(filepath) {
 	if (fileExists(filepath)) {

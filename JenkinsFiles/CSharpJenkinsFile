@@ -26,7 +26,7 @@ try {
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params.test_selection_criteria,params.environment, params.browser, params.no_of_parallel_threads )
+                             jutils.executeNUnitTests(params.environment, params.browser, params.no_of_parallel_threads,params.test_selection_criteria )
                             echo "===Test completed ========"
                         }
                     }
@@ -37,7 +37,6 @@ try {
                     }
                     try {
                         stage("Archive Artifacts") {
-                            echo "===Parsing NUit Results====="
                             echo "=======Artifacts stage ===="
                             jutils.archiveCSharpArtifacts()
                             echo "=======Artifacts stage completed ===="
@@ -51,6 +50,7 @@ try {
                     try {
                         stage('XRay') {
                             echo "=======XRay Stage ===="
+                            echo "===Parsing NUit Results====="
                             jutils.parseNUnitTestResults("${PROJECT_LOCATION}TestResult.xml")
                             jutils.updateXRayWithNUnit(params.test_plan_key)
                         }
@@ -81,7 +81,6 @@ try {
                 echo "=======Shutdown AWS Failed ===="
                 currentBuild.result = 'FAILURE'
                 infraError = true
-
             }
 
         }

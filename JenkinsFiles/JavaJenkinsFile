@@ -1,5 +1,5 @@
 def status = true
-
+def infraError = true
 try {
     node
             {
@@ -8,73 +8,107 @@ try {
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
                     CURRENT_DIR_PATH = temp
+                    jutils.initialize(params.config_file_id)
+                    echo "=========Master Setup Completed========="
+                }
+                stage('Grid Setup') {
+                    jutils.setupGrid(params.test_execution_vm)
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
-                        echo "===checking out project repo  ==============="
-                        jutils.checkoutRepo(params.repo_url, params.branch)
+                        jutils.checkoutRepo(REPO, BRANCH)
+                        echo "===project repo ceckout completed ========"
+                        infraError =  false
                     }
-                    stage('Build') {
-                        bat 'mvn clean compile'
+                    stage('Code Compile') {
+                        jutils.compileMavenProject("${env.WORKSPACE}","pom.xml")
+                        echo "===Code Compile completed ========"
                     }
                     try {
-                        stage('Test') {
-                            jutils.executeMavenTests(params.no_of_parallel_threads, params.use_selenium_grid, params.browser, params.environment, params.no_of_retries, params.test_suite_file)
+                        stage('Execute Tests') {
+                            jutils.executeMavenTests(params.environment, params.browser, params.no_of_parallel_threads, params.no_of_retries,params.test_suite_file)
+                            echo "===Test completed ========"
                         }
                     }
                     catch (Exception e) {
                         println(e)
+                        echo "===Test completed With Error========"
                         status = false
                     }
                     try {
-                    stage("Artifacts") {
-
-                        jutils.parseTestNGTestResults("${env.WORKSPACE}/target/surefire-reports/testng-results.xml")
-                        echo "=======Artifacts stage ===="
-                        jutils.archiveJavaArtifacts()
-                    }
+                        stage("Archive Artifacts") {
+                            echo "=======Artifacts stage ===="
+                            jutils.archiveJavaArtifacts()
+                            echo "=======Artifacts stage completed ===="
+                        }
                     }
                     catch (Exception e) {
                         println(e)
+                        echo "=======Artifacts stage completed With Error===="
                         status = false
                     }
                     try {
                         stage('XRay') {
                             echo "=======XRay Stage ===="
+                            echo "===Parsing NUit Results====="
+                            jutils.parseTestNGTestResults("${PROJECT_LOCATION}target/surefire-reports/testng-results.xml")
                             jutils.updateXRayWithTestNG(params.test_plan_key)
                         }
                     }
                     catch (Exception e) {
-                        println("XRay Error"+e)
+                        println(e)
+                        echo "=======XRay stage completed With Error===="
                         status = false
                     }
-                }
-                try {
-                    stage('Email') {
-                        echo "=======EMail Stage ===="
-                        jutils.sendEmail(params.email_recipients)
-                    }
-                }
-                catch (Exception e) {
-                    println(e)
-                    status = false
                 }
             }
 
 } catch (Exception ex) {
     println(ex)
+    echo "=======End completed With Error===="
     status = false
 } finally {
     if (!status) {
         currentBuild.result = 'FAILURE'
     }
+    node {
+        stage('Cleanup') {
+            try {
+                echo "=======Shutdown AWS Instance===="
+                jutils.shutdown(params.test_execution_vm);
+            }
+            catch (Exception e){
+                echo "=======Shutdown AWS Failed ===="
+                currentBuild.result = 'FAILURE'
+                infraError = true
+            }
+
+        }
+        stage('Email') {
+            try {
+                echo "=======EMail Stage ===="
+                jutils.sendEmail(infraError)
+            }
+            catch (Exception e){
+                echo "=======Sending Email Failed ===="
+                currentBuild.result = 'FAILURE'
+            }
+        }
+    }
+
     echo "===Done==="
 }
 
 def getCurrentDirectory() {
-    def temp = "${env.WORKSPACE}@script"
-    def std = powershell returnStdout: true, script: """(Get-ChildItem -Path $temp -Recurse -Filter "*tmp").FullName"""
+    def current = "${env.WORKSPACE}@script"
+    def std = powershell returnStdout: true, script: """(Get-ChildItem -Path $current -Recurse -Filter "*tmp").FullName"""
     temp = std.trim().replace("\n", "")
     echo "modified:${temp}"
-    return temp.replace('@tmp', '')
+    def modified = temp.replace('@tmp', '').trim()
+    if(modified.length()>0){
+        return modified
+    }
+    else{
+        return current
+    }
 }
