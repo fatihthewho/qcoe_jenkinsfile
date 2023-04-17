@@ -8,11 +8,11 @@ try {
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
                     CURRENT_DIR_PATH = temp
-                    jutils.initialize(params.config_file_id)
+                    jutils.initialize(params['Config File Id'])
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {
-                    jutils.setupGrid(params.test_execution_vm)
+                    jutils.setupGrid(params['Test Execution VM'])
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
@@ -26,7 +26,7 @@ try {
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params.environment, params.browser, params.no_of_parallel_threads,params.test_selection_criteria )
+                             jutils.executeNUnitTests(params['Environment'], params['Browser'], params['Number Of Parallel Threads'],params['Test Selection Criteria'])
                             echo "===Test completed ========"
                         }
                     }
@@ -52,7 +52,7 @@ try {
                             echo "=======XRay Stage ===="
                             echo "===Parsing NUit Results====="
                             jutils.parseNUnitTestResults("${PROJECT_LOCATION}TestResult.xml")
-                            jutils.updateXRayWithNUnit(params.test_plan_key)
+                            jutils.updateXRayWithNUnit(params['Test Plan Key'])
                         }
                     }
                     catch (Exception e) {
@@ -75,7 +75,7 @@ try {
         stage('Cleanup') {
             try {
                 echo "=======Shutdown AWS Instance===="
-                jutils.shutdown(params.test_execution_vm);
+                jutils.shutdown(params['Test Execution VM']);
             }
             catch (Exception e){
                 echo "=======Shutdown AWS Failed ===="
