@@ -12,7 +12,7 @@ def HUB_URL
 
 
 def setupGrid(ip) {
-	if(ip.equals('Select')){
+	if(ip.equals('-select-')){
 		throw new Exception("select test_execution_vm")
 	}
 	if(ip.equals('qcoe_selenium_grid')){
