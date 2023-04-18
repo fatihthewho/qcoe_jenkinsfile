@@ -75,7 +75,7 @@ try {
         stage('Cleanup') {
             try {
                 echo "=======Shutdown AWS Instance===="
-                jutils.shutdown(params['Test Execution VM']);
+                jutils.shutdown(params['Test_Execution_VM']);
             }
             catch (Exception e){
                 echo "=======Shutdown AWS Failed ===="
