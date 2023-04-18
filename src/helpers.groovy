@@ -13,9 +13,9 @@ def HUB_URL
 
 def setupGrid(ip) {
 	if(ip.equals('-select-')){
-		throw new Exception("select test_execution_vm")
+		throw new Exception("select Execution VM")
 	}
-	if(ip.equals('qcoe_selenium_grid')){
+	if(ip.equals('qcoe_grid')){
 		HUB_URL="http://10.45.139.112:4444/"
 	}
 	else{
@@ -252,7 +252,7 @@ def initialize(fileId){
 
 }
 def shutdown(ip) {
-	if(!ip.equals('qcoe_selenium_grid')){
+	if(!ip.equals('qcoe_grid')){
 		def instanceId= autils.getInstanceID(ip)
 		autils.stopAndWaitInstance(instanceId)
 	}

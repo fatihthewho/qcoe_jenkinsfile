@@ -12,7 +12,7 @@ try {
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {
-                    jutils.setupGrid(params['Test_Execution_VM'])
+                    jutils.setupGrid(params['ExecutionVM'])
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
@@ -75,7 +75,7 @@ try {
         stage('Cleanup') {
             try {
                 echo "=======Shutdown AWS Instance===="
-                jutils.shutdown(params['Test_Execution_VM']);
+                jutils.shutdown(params['ExecutionVM']);
             }
             catch (Exception e){
                 echo "=======Shutdown AWS Failed ===="
