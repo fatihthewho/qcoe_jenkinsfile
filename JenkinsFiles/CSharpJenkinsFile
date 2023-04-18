@@ -12,7 +12,7 @@ try {
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {
-                    jutils.setupGrid(params['Test Execution VM'])
+                    jutils.setupGrid(params['Test_Execution_VM'])
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
