@@ -134,7 +134,7 @@ def sendEmail(infraError) {
 		writeFile(file: "${html}", text: mail)
 		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
 		if(infraError) {
-		emailext body: readFile("${html}"), mimeType: 'text/html', subject: 'Setup Failures in $PROJECT_NAME', to: """${QCoE_Mail}"""
+		emailext body: readFile("${html}"), mimeType: 'text/html', subject: 'Setup Failures in $PROJECT_NAME # $BUILD_NUMBER ', to: """${QCoE_Mail}"""
 		}
 	}
 }
