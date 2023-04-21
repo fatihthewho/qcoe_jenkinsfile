@@ -1,5 +1,6 @@
 // not working with def
 TEST_SUMMARY = [:]
+THREAD_COUNT = 1
 QCOE_MAIL="venkata.kunta"
 // not working with out def
 def PROJECT_LOCATION
@@ -15,7 +16,6 @@ def PARALLEL_EXECUTION
 def RETRY_FAILED_TESTS
 def XRAY_TEST_PLAN
 def TEST_SUITES_FOLDER
-def THREAD_COUNT = 1
 
 def setupGrid() {
 	if(EXECUTION_VM.equalsIgnoreCase('use-qcoe-grid')){
