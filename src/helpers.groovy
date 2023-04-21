@@ -22,6 +22,7 @@ def setupGrid() {
 		HUB_URL="http://10.45.139.112:4444/"
 		if(PARALLEL_EXECUTION.equals('true')){
 			THREAD_COUNT=5
+			echo "${THREAD_COUNT}"
 		}
 	}
 	else{
@@ -274,8 +275,11 @@ def initialize(fileId){
 		if(XRAY_TEST_PLAN.trim().equalsIgnoreCase('pre-defined')){
 			XRAY_TEST_PLAN = CONFIG['XRAY_TEST_PLAN'].trim()
 		}
+
 		TEST_SUITES_FOLDER=CONFIG['TEST_SUITES_FOLDER']
+		echo "Test Results :${TEST_SUITES_FOLDER}"
 		PARALLEL_EXECUTION=params.PARALLEL_EXECUTION
+		echo "Parallel :${TEST_SUITES_FOLDER}"
 	}
 	autils = load "${CURRENT_DIR_PATH}/src/aws.groovy"
 

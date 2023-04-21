@@ -13,11 +13,12 @@ try {
                 }
                 stage('Grid Setup') {
                     jutils.setupGrid()
+                    echo "===grid setup completed ========"
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
                         jutils.checkoutRepo()
-                        echo "===project repo ceckout completed ========"
+                        echo "===project repo checkout completed ========"
                         infraError =  false
                     }
                     stage('Code Compile') {

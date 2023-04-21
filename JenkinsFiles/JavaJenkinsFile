@@ -13,11 +13,12 @@ try {
                 }
                 stage('Grid Setup') {
                     jutils.setupGrid(params['ExecutionVM'])
+                    echo "===grid setup completed ========"
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
                         jutils.checkoutRepo(REPO, BRANCH)
-                        echo "===project repo ceckout completed ========"
+                        echo "===project repo checkout completed ========"
                         infraError =  false
                     }
                     stage('Code Compile') {
@@ -27,12 +28,12 @@ try {
                     try {
                         stage('Execute Tests') {
                             jutils.executeMavenTests(params['Environment'],params['Browser'],  params['Number Of Parallel Threads'], params['Number Of Retries'],params['Test Suite File'])
-                            echo "===Test completed ========"
+                            echo "===Test Execution completed ========"
                         }
                     }
                     catch (Exception e) {
                         println(e)
-                        echo "===Test completed With Error========"
+                        echo "===Test Execution completed With Error========"
                         status = false
                     }
                     try {
