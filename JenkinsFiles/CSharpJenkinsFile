@@ -1,3 +1,7 @@
+properties([
+        disableConcurrentBuilds(),
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5')),
+])
 def status = true
 def infraError = true
 try {
@@ -8,25 +12,25 @@ try {
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
                     CURRENT_DIR_PATH = temp
-                    jutils.initialize(params['Config File Id'])
+                    jutils.initialize(params['CONFIG_FILE_ID'])
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {
-                    jutils.setupGrid(params['ExecutionVM'])
+                    jutils.setupGrid()
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
-                        jutils.checkoutRepo(REPO, BRANCH)
+                        jutils.checkoutRepo()
                         echo "===project repo ceckout completed ========"
                         infraError =  false
                     }
                     stage('Code Compile') {
-                        jutils.compileCSharp("${env.WORKSPACE}","${CSPROJ}")
+                        jutils.compileCSharp("${env.WORKSPACE}")
                         echo "===Code Compile completed ========"
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params['Environment'], params['Browser'], params['Number Of Parallel Threads'],params['Test Selection Criteria'])
+                             jutils.executeNUnitTests(params.BROWSER,params.TEST_SELECTION_CRITERIA)
                             echo "===Test completed ========"
                         }
                     }
@@ -52,7 +56,7 @@ try {
                             echo "=======XRay Stage ===="
                             echo "===Parsing NUit Results====="
                             jutils.parseNUnitTestResults("${PROJECT_LOCATION}TestResult.xml")
-                            jutils.updateXRayWithNUnit(params['Test Plan Key'])
+                            jutils.updateXRayWithNUnit()
                         }
                     }
                     catch (Exception e) {
@@ -75,7 +79,7 @@ try {
         stage('Cleanup') {
             try {
                 echo "=======Shutdown AWS Instance===="
-                jutils.shutdown(params['ExecutionVM']);
+                jutils.shutdown();
             }
             catch (Exception e){
                 echo "=======Shutdown AWS Failed ===="

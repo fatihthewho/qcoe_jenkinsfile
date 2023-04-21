@@ -1,6 +1,6 @@
 // not working with def
 TEST_SUMMARY = [:]
-QCoE_Mail="venkata.kunta"
+QCOE_MAIL="venkata.kunta"
 // not working with out def
 def PROJECT_LOCATION
 def CSPROJ
@@ -9,26 +9,41 @@ def BRANCH
 def EMAIL_IDS
 def CURRENT_DIR_PATH
 def HUB_URL
+def EXECUTION_VM
+def TEST_ENVIRONMENT
+def PARALLEL_EXECUTION
+def RETRY_FAILED_TESTS
+def XRAY_TEST_PLAN
+def TEST_SUITES_FOLDER
+def THREAD_COUNT = 1
 
-
-def setupGrid(ip) {
-	if(ip.equals('-select-')){
-		throw new Exception("select Execution VM")
-	}
-	if(ip.equals('qcoe_grid')){
+def setupGrid() {
+	if(EXECUTION_VM.equalsIgnoreCase('use-qcoe-grid')){
 		HUB_URL="http://10.45.139.112:4444/"
+		if(PARALLEL_EXECUTION.equals('true')){
+			THREAD_COUNT=5
+		}
 	}
 	else{
-		def instanceId= autils.getInstanceID(ip)
+		def instanceId= autils.getInstanceID(EXECUTION_VM)
 		autils.startAndWaitInstance(instanceId)
-		HUB_URL="http://${ip}:4444/"
+		HUB_URL="http://${EXECUTION_VM}:4444/"
+		if(PARALLEL_EXECUTION.equals('true')){
+			THREAD_COUNT=2
+		}
+	}
+}
+def shutdown() {
+	if(!EXECUTION_VM.equalsIgnoreCase('qcoe_grid')){
+		def instanceId= autils.getInstanceID(EXECUTION_VM)
+		autils.stopAndWaitInstance(instanceId)
 	}
 }
 
-def checkoutRepo(url,branch){
-	echo "checking out ${url} ${branch} "
+def checkoutRepo(){
+	echo "checking out ${REPO} ${BRANCH} "
 	checkout([$class: 'GitSCM',
-			  branches: [[name: "*/${branch}"]],
+			  branches: [[name: "*/${BRANCH}"]],
 			  doGenerateSubmoduleConfigurations: false,
 			  extensions: [[$class: 'CleanCheckout']],
 			  submoduleCfg: [],
@@ -37,9 +52,9 @@ def checkoutRepo(url,branch){
 
 }
 
-def compileCSharp(folder,project){
-	setProjectLocation(folder,project)
-	bat "dotnet build ${PROJECT_LOCATION}${project}"
+def compileCSharp(folder){
+	setProjectLocation(folder,CSPROJ)
+	bat "dotnet build ${PROJECT_LOCATION}${CSPROJ}"
 }
 def compileMavenProject(folder,project){
 	setProjectLocation(folder,project)
@@ -50,9 +65,9 @@ def setProjectLocation(folder,project){
 	PROJECT_LOCATION = std.trim().replace("\n", "").replace("${folder}\\","").replace(project,"")
 	echo "PL :${PROJECT_LOCATION}"
 }
-def executeNUnitTests(environment,browser,threads,testSelection) {
+def executeNUnitTests(browser,testSelection) {
 
-	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${environment} --tp:browser=${browser} --tp:gridUrl=${HUB_URL} --workers=${threads}  ${testSelection}"
+	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${TEST_ENVIRONMENT} --tp:browser=${browser} --tp:gridUrl=${HUB_URL} --workers=${THREAD_COUNT}  ${testSelection}"
 
 }
 def executeMavenTests(environment, browser, threads, retries, xmlFileName) {
@@ -71,15 +86,15 @@ def archiveJavaArtifacts() {
 	publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '__test-results', reportFiles: 'Report.html', reportName: 'Test Summary', reportTitles: ''])
 
 }
-def updateXRayWithNUnit(testPlan){
+def updateXRayWithNUnit(){
 	echo "NUnit Test Results"
 	nunit testResultsPattern: "${PROJECT_LOCATION}TestResult.xml"
-	if ("${testPlan}" != 'NA') {
-		echo "${testPlan}"
+	if ("${XRAY_TEST_PLAN}" != 'NA') {
+		echo "${XRAY_TEST_PLAN}"
 	def temp = """{
                     "fields": {
                         "project": {
-                            "key": "${testPlan.split('-')[0]}"
+                            "key": "${XRAY_TEST_PLAN.split('-')[0]}"
                         },
                         "summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
                         "issuetype": {
@@ -87,7 +102,7 @@ def updateXRayWithNUnit(testPlan){
                         }  
                 },
                 "xrayFields": {
-					"testPlanKey": "${testPlan}"
+					"testPlanKey": "${XRAY_TEST_PLAN}"
 				}
                 }"""
 	   echo "${temp}"
@@ -100,16 +115,16 @@ def updateXRayWithNUnit(testPlan){
                 }'''])
 	}
 }
-def updateXRayWithTestNG(testPlan) {
+def updateXRayWithTestNG() {
 	echo "TestNG Test Results"
 	testNG showFailedBuilds: true
-	if ("${testPlan}" != 'NA' ){
-		echo "${testPlan}"
+	if ("${XRAY_TEST_PLAN}" != 'NA' ){
+		echo "${XRAY_TEST_PLAN}"
 		step(
 				[$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: """{
 			"fields": {
 				"project": {
-					"key": "${testPlan.split('-')[0]}"
+					"key": "${XRAY_TEST_PLAN.split('-')[0]}"
 				},
 				"summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
 				"issuetype": {
@@ -117,7 +132,7 @@ def updateXRayWithTestNG(testPlan) {
 				}  
 			},
 			"xrayFields": {
-					"testPlanKey": "${testPlan}"
+					"testPlanKey": "${XRAY_TEST_PLAN}"
 				}
 			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
 		)
@@ -134,7 +149,7 @@ def sendEmail(infraError) {
 		writeFile(file: "${html}", text: mail)
 		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
 		if(infraError) {
-		emailext body: readFile("${html}"), mimeType: 'text/html', subject: 'Setup Failures in $PROJECT_NAME # $BUILD_NUMBER ', to: """${QCoE_Mail}"""
+		emailext body: readFile("${html}"), mimeType: 'text/html', subject: 'Setup Failures in $PROJECT_NAME # $BUILD_NUMBER ', to: """${QCOE_MAIL}"""
 		}
 	}
 }
@@ -247,16 +262,25 @@ def initialize(fileId){
 		REPO = CONFIG['REPO']
 		BRANCH = CONFIG['BRANCH']
 		EMAIL_IDS=CONFIG['EMAIL']
+		TEST_ENVIRONMENT = params.TEST_ENVIRONMENT.trim()
+		if(TEST_ENVIRONMENT.trim().equalsIgnoreCase('pre-defined')){
+			TEST_ENVIRONMENT = CONFIG['TEST_ENVIRONMENT'].trim()
+		}
+		EXECUTION_VM = params.EXECUTION_VM.trim()
+		if(EXECUTION_VM.trim().equalsIgnoreCase('pre-defined')){
+			EXECUTION_VM = CONFIG['EXECUTION_VM'].trim()
+		}
+		XRAY_TEST_PLAN=params.XRAY_TEST_PLAN.trim()
+		if(XRAY_TEST_PLAN.trim().equalsIgnoreCase('pre-defined')){
+			XRAY_TEST_PLAN = CONFIG['XRAY_TEST_PLAN'].trim()
+		}
+		TEST_SUITES_FOLDER=CONFIG['TEST_SUITES_FOLDER']
+		PARALLEL_EXECUTION=params.PARALLEL_EXECUTION
 	}
 	autils = load "${CURRENT_DIR_PATH}/src/aws.groovy"
 
 }
-def shutdown(ip) {
-	if(!ip.equals('qcoe_grid')){
-		def instanceId= autils.getInstanceID(ip)
-		autils.stopAndWaitInstance(instanceId)
-	}
-}
+
 
 return this
 
