@@ -18,7 +18,7 @@ def XRAY_TEST_PLAN
 def TEST_SUITES_FOLDER
 
 def setupGrid() {
-	if(EXECUTION_VM.equalsIgnoreCase('use-qcoe-grid')){
+	if(EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
 		HUB_URL="http://10.45.139.112:4444/"
 		if(PARALLEL_EXECUTION){
 			THREAD_COUNT=5
@@ -35,7 +35,7 @@ def setupGrid() {
 	}
 }
 def shutdown() {
-	if(!EXECUTION_VM.equalsIgnoreCase('use-qcoe-grid')){
+	if(!EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
 		def instanceId= autils.getInstanceID(EXECUTION_VM)
 		autils.stopAndWaitInstance(instanceId)
 	}
@@ -259,10 +259,10 @@ def initialize(fileId){
 	configFileProvider(
 			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
 		CONFIG = readJSON(file: BUILD_CONFIG)
-		CSPROJ = CONFIG['CSPROJ']
-		REPO = CONFIG['REPO']
-		BRANCH = CONFIG['BRANCH']
-		EMAIL_IDS=CONFIG['EMAIL']
+		CSPROJ = CONFIG['CSPROJ'].trim()
+		REPO = CONFIG['REPO'].trim()
+		BRANCH = CONFIG['BRANCH'].trim()
+		EMAIL_IDS=CONFIG['EMAIL'].trim()
 		TEST_ENVIRONMENT = params.TEST_ENVIRONMENT.trim()
 		if(TEST_ENVIRONMENT.trim().equalsIgnoreCase('pre-defined')){
 			TEST_ENVIRONMENT = CONFIG['TEST_ENVIRONMENT'].trim()
