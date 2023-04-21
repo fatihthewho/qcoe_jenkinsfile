@@ -15,7 +15,7 @@ def PARALLEL_EXECUTION
 def RETRY_FAILED_TESTS
 def XRAY_TEST_PLAN
 def TEST_SUITES_FOLDER
-THREAD_COUNT = 1
+def THREAD_COUNT = 1
 
 def setupGrid() {
 	if(EXECUTION_VM.equalsIgnoreCase('use-qcoe-grid')){
@@ -35,7 +35,7 @@ def setupGrid() {
 	}
 }
 def shutdown() {
-	if(!EXECUTION_VM.equalsIgnoreCase('qcoe_grid')){
+	if(!EXECUTION_VM.equalsIgnoreCase('use-qcoe-grid')){
 		def instanceId= autils.getInstanceID(EXECUTION_VM)
 		autils.stopAndWaitInstance(instanceId)
 	}
