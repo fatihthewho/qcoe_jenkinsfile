@@ -15,12 +15,12 @@ def PARALLEL_EXECUTION
 def RETRY_FAILED_TESTS
 def XRAY_TEST_PLAN
 def TEST_SUITES_FOLDER
-def THREAD_COUNT = 1
+THREAD_COUNT = 1
 
 def setupGrid() {
 	if(EXECUTION_VM.equalsIgnoreCase('use-qcoe-grid')){
 		HUB_URL="http://10.45.139.112:4444/"
-		if(PARALLEL_EXECUTION.equals('true')){
+		if(PARALLEL_EXECUTION){
 			THREAD_COUNT=5
 			echo "${THREAD_COUNT}"
 		}
@@ -29,7 +29,7 @@ def setupGrid() {
 		def instanceId= autils.getInstanceID(EXECUTION_VM)
 		autils.startAndWaitInstance(instanceId)
 		HUB_URL="http://${EXECUTION_VM}:4444/"
-		if(PARALLEL_EXECUTION.equals('true')){
+		if(PARALLEL_EXECUTION){
 			THREAD_COUNT=2
 		}
 	}
@@ -279,7 +279,7 @@ def initialize(fileId){
 		TEST_SUITES_FOLDER=CONFIG['TEST_SUITES_FOLDER']
 		echo "Test Results :${TEST_SUITES_FOLDER}"
 		PARALLEL_EXECUTION=params.PARALLEL_EXECUTION
-		echo "Parallel :${TEST_SUITES_FOLDER}"
+		echo "Parallel :${PARALLEL_EXECUTION}"
 	}
 	autils = load "${CURRENT_DIR_PATH}/src/aws.groovy"
 
