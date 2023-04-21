@@ -47,7 +47,7 @@ def checkoutRepo(){
 			  doGenerateSubmoduleConfigurations: false,
 			  extensions: [[$class: 'CleanCheckout']],
 			  submoduleCfg: [],
-			  userRemoteConfigs: [[credentialsId: 'bitbucket-svc1', url: "${url}"]]
+			  userRemoteConfigs: [[credentialsId: 'bitbucket-svc1', url: "${REPO}"]]
 	])
 
 }
