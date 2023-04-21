@@ -1,7 +1,3 @@
-properties([
-        disableConcurrentBuilds(),
-        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5')),
-])
 def status = true
 def infraError = true
 try {
