@@ -27,7 +27,7 @@ try {
                     }
                     try {
                         stage('Execute Tests') {
-                            jutils.executeMavenTests(params.BROWSER,params.TEST_SUITE_FILE,params.RETRY_FAILED_TESTS)
+                            jutils.executeMavenTests(params.TEST_SUITE_FILE)
                             echo "===Test completed ========"
                         }
                     }

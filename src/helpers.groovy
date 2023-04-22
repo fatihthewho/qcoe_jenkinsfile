@@ -16,6 +16,8 @@ def TEST_ENVIRONMENT
 def PARALLEL_EXECUTION
 def XRAY_TEST_PLAN
 def TEST_SUITES_FOLDER
+def BROWSER
+
 
 def setupGrid() {
 	if(TEST_EXECUTION_VM.equalsIgnoreCase('NA')){
@@ -67,13 +69,13 @@ def setProjectLocation(folder,project){
 	PROJECT_LOCATION = std.trim().replace("\n", "").replace("${folder}\\","").replace(project,"")
 	echo "PL :${PROJECT_LOCATION}"
 }
-def executeNUnitTests(browser,testSelection) {
+def executeNUnitTests(testSelection) {
 
-	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${TEST_ENVIRONMENT} --tp:browser=${browser} --tp:gridUrl=${HUB_URL} --workers=${THREAD_COUNT}  ${testSelection}"
+	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${TEST_ENVIRONMENT} --tp:browser=${BROWSER} --tp:gridUrl=${HUB_URL} --workers=${THREAD_COUNT}  ${testSelection}"
 
 }
-def executeMavenTests(browser, xmlFileName) {
-	bat "mvn test -Denv=${TEST_ENVIRONMENT} -DBrowser=${browser} -DgridUrl=${HUB_URL} -DthreadCount=${THREAD_COUNT} -Dretry=${RETRY_COUNT} -DsuiteFile=${TEST_SUITES_FOLDER}/${xmlFileName}"
+def executeMavenTests(xmlFileName) {
+	bat "mvn test -Denv=${TEST_ENVIRONMENT} -DBrowser=${BROWSER} -DgridUrl=${HUB_URL} -DthreadCount=${THREAD_COUNT} -Dretry=${RETRY_COUNT} -DsuiteFile=${TEST_SUITES_FOLDER}/${xmlFileName}"
 }
 
 def archiveCSharpArtifacts(){
@@ -287,6 +289,7 @@ def initialize(fileId){
 		echo "XRAY_TEST_PLAN : ${XRAY_TEST_PLAN}"
 		PARALLEL_EXECUTION = params.PARALLEL_EXECUTION
 		echo "PARALLEL_EXECUTION :${PARALLEL_EXECUTION}"
+		BROWSER = params.BROWSER;
 		CSPROJ = CONFIG['CSPROJ']
 		if (CSPROJ!=null) {
 			CSPROJ = CSPROJ.trim()

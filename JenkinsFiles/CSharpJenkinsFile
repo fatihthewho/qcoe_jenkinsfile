@@ -27,7 +27,7 @@ try {
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params.BROWSER,params.TEST_SELECTION_CRITERIA)
+                             jutils.executeNUnitTests(params.TEST_SELECTION_CRITERIA)
                             echo "===Test completed ========"
                         }
                     }
