@@ -259,7 +259,6 @@ def initialize(fileId){
 	configFileProvider(
 			[configFile(fileId: "${fileId}", variable: 'BUILD_CONFIG')]) {
 		CONFIG = readJSON(file: BUILD_CONFIG)
-		CSPROJ = CONFIG['CSPROJ'].trim()
 		REPO = CONFIG['REPO'].trim()
 		BRANCH = params.BRANCH.trim()
 		if (BRANCH.equals('')) {
@@ -288,15 +287,18 @@ def initialize(fileId){
 		echo "XRAY_TEST_PLAN : ${XRAY_TEST_PLAN}"
 		PARALLEL_EXECUTION = params.PARALLEL_EXECUTION
 		echo "PARALLEL_EXECUTION :${PARALLEL_EXECUTION}"
-		TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER']
-		if (CSPROJ==null) {
-
+		CSPROJ = CONFIG['CSPROJ']
+		if (CSPROJ!=null) {
+			CSPROJ = CSPROJ.trim()
+		}
+		else{
+			TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER']
 			if (TEST_SUITES_FOLDER.equals('')) {
 				TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER'].trim()
 			}
 			echo "TEST_SUITES_FOLDER :${TEST_SUITES_FOLDER}"
 
-		RETRY_FAILED_TESTS = params.RETRY_FAILED_TESTS
+			RETRY_FAILED_TESTS = params.RETRY_FAILED_TESTS
 			if (RETRY_FAILED_TESTS) {
 				RETRY_COUNT = 1
 			}
@@ -304,7 +306,6 @@ def initialize(fileId){
 		}
 	}
 	autils = load "${CURRENT_DIR_PATH}/src/aws.groovy"
-
 }
 
 
