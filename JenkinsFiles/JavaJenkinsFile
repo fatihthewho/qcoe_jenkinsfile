@@ -8,32 +8,32 @@ try {
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
                     CURRENT_DIR_PATH = temp
-                    jutils.initialize(params['Config File Id'])
+                    jutils.initialize(params['CONFIG_FILE_ID'])
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {
-                    jutils.setupGrid(params['ExecutionVM'])
+                    jutils.setupGrid()
                     echo "===grid setup completed ========"
                 }
                 node("selenium") {
                     stage('Checkout Repo') {
-                        jutils.checkoutRepo(REPO, BRANCH)
+                        jutils.checkoutRepo()
                         echo "===project repo checkout completed ========"
                         infraError =  false
                     }
                     stage('Code Compile') {
-                        jutils.compileMavenProject("${env.WORKSPACE}","pom.xml")
+                        jutils.compileMavenProject("${env.WORKSPACE}")
                         echo "===Code Compile completed ========"
                     }
                     try {
                         stage('Execute Tests') {
-                            jutils.executeMavenTests(params['Environment'],params['Browser'],  params['Number Of Parallel Threads'], params['Number Of Retries'],params['Test Suite File'])
-                            echo "===Test Execution completed ========"
+                            jutils.executeMavenTests(params.BROWSER,params.TEST_SUITE_FILE,params.RETRY_FAILED_TESTS)
+                            echo "===Test completed ========"
                         }
                     }
                     catch (Exception e) {
                         println(e)
-                        echo "===Test Execution completed With Error========"
+                        echo "===Test completed With Error========"
                         status = false
                     }
                     try {
@@ -53,7 +53,7 @@ try {
                             echo "=======XRay Stage ===="
                             echo "===Parsing NUit Results====="
                             jutils.parseTestNGTestResults("${PROJECT_LOCATION}target/surefire-reports/testng-results.xml")
-                            jutils.updateXRayWithTestNG(params['Test Plan Key'])
+                            jutils.updateXRayWithTestNG()
                         }
                     }
                     catch (Exception e) {
@@ -76,7 +76,7 @@ try {
         stage('Cleanup') {
             try {
                 echo "=======Shutdown AWS Instance===="
-                jutils.shutdown(params['ExecutionVM']);
+                jutils.shutdown();
             }
             catch (Exception e){
                 echo "=======Shutdown AWS Failed ===="

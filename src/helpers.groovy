@@ -2,41 +2,42 @@
 TEST_SUMMARY = [:]
 THREAD_COUNT = 1
 QCOE_MAIL="venkata.kunta"
+RETRY_COUNT=0
 // not working with out def
 def PROJECT_LOCATION
 def CSPROJ
 def REPO
 def BRANCH
-def EMAIL_IDS
+def EMAIL_RECIPIENTS
 def CURRENT_DIR_PATH
 def HUB_URL
-def EXECUTION_VM
+def TEST_EXECUTION_VM
 def TEST_ENVIRONMENT
 def PARALLEL_EXECUTION
-def RETRY_FAILED_TESTS
 def XRAY_TEST_PLAN
 def TEST_SUITES_FOLDER
 
 def setupGrid() {
-	if(EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
+	if(TEST_EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
 		HUB_URL="http://10.45.139.112:4444/"
 		if(PARALLEL_EXECUTION){
 			THREAD_COUNT=5
-			echo "${THREAD_COUNT}"
+
 		}
 	}
 	else{
-		def instanceId= autils.getInstanceID(EXECUTION_VM)
+		def instanceId= autils.getInstanceID(TEST_EXECUTION_VM)
 		autils.startAndWaitInstance(instanceId)
-		HUB_URL="http://${EXECUTION_VM}:4444/"
+		HUB_URL="http://${TEST_EXECUTION_VM}:4444/"
 		if(PARALLEL_EXECUTION){
 			THREAD_COUNT=2
 		}
 	}
+	echo "THREAD_COUNT : ${THREAD_COUNT}"
 }
 def shutdown() {
-	if(!EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
-		def instanceId= autils.getInstanceID(EXECUTION_VM)
+	if(!TEST_EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
+		def instanceId= autils.getInstanceID(TEST_EXECUTION_VM)
 		autils.stopAndWaitInstance(instanceId)
 	}
 }
@@ -57,8 +58,8 @@ def compileCSharp(folder){
 	setProjectLocation(folder,CSPROJ)
 	bat "dotnet build ${PROJECT_LOCATION}${CSPROJ}"
 }
-def compileMavenProject(folder,project){
-	setProjectLocation(folder,project)
+def compileMavenProject(folder){
+	setProjectLocation(folder,"pom.xml")
 	bat 'mvn clean compile'
 }
 def setProjectLocation(folder,project){
@@ -71,8 +72,8 @@ def executeNUnitTests(browser,testSelection) {
 	bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${TEST_ENVIRONMENT} --tp:browser=${browser} --tp:gridUrl=${HUB_URL} --workers=${THREAD_COUNT}  ${testSelection}"
 
 }
-def executeMavenTests(environment, browser, threads, retries, xmlFileName) {
-	bat "mvn test -Denv=${environment} -DBrowser=${browser} -DgridUrl=${HUB_URL} -DthreadCount=${threads} -Dretry=${retries} -DsuiteFile=${xmlFileName}"
+def executeMavenTests(browser, xmlFileName) {
+	bat "mvn test -Denv=${TEST_ENVIRONMENT} -DBrowser=${browser} -DgridUrl=${HUB_URL} -DthreadCount=${THREAD_COUNT} -Dretry=${RETRY_COUNT} -DsuiteFile=${xmlFileName}"
 }
 
 def archiveCSharpArtifacts(){
@@ -198,7 +199,6 @@ def parseNUnitTestResults(filepath) {
 				println(TEST_SUMMARY)
 				break
 			}
-
 		}
 	}
 	else {
@@ -261,25 +261,47 @@ def initialize(fileId){
 		CONFIG = readJSON(file: BUILD_CONFIG)
 		CSPROJ = CONFIG['CSPROJ'].trim()
 		REPO = CONFIG['REPO'].trim()
-		BRANCH = CONFIG['BRANCH'].trim()
-		EMAIL_IDS=CONFIG['EMAIL'].trim()
+		BRANCH = params.BRANCH.trim()
+		if (BRANCH.equals('')) {
+			BRANCH = CONFIG['BRANCH'].trim()
+		}
+		echo "BRANCH : ${BRANCH}"
+		EMAIL_RECIPIENTS = params.EMAIL_RECIPIENTS.trim()
+		if (EMAIL_RECIPIENTS.equals('')) {
+			EMAIL_RECIPIENTS = CONFIG['EMAIL_RECIPIENTS'].trim()
+		}
+		echo "EMAIL_RECIPIENTS : ${EMAIL_RECIPIENTS}"
 		TEST_ENVIRONMENT = params.TEST_ENVIRONMENT.trim()
-		if(TEST_ENVIRONMENT.trim().equalsIgnoreCase('pre-defined')){
+		if (TEST_ENVIRONMENT.equals('')) {
 			TEST_ENVIRONMENT = CONFIG['TEST_ENVIRONMENT'].trim()
 		}
-		EXECUTION_VM = params.EXECUTION_VM.trim()
-		if(EXECUTION_VM.trim().equalsIgnoreCase('pre-defined')){
-			EXECUTION_VM = CONFIG['EXECUTION_VM'].trim()
+		echo "TEST_ENVIRONMENT : ${TEST_ENVIRONMENT}"
+		TEST_EXECUTION_VM = params.TEST_EXECUTION_VM.trim()
+		if (TEST_EXECUTION_VM.equals('')) {
+			TEST_EXECUTION_VM = CONFIG['TEST_EXECUTION_VM'].trim()
 		}
-		XRAY_TEST_PLAN=params.XRAY_TEST_PLAN.trim()
-		if(XRAY_TEST_PLAN.trim().equalsIgnoreCase('pre-defined')){
+		echo "TEST_EXECUTION_VM : ${TEST_EXECUTION_VM}"
+		XRAY_TEST_PLAN = params.XRAY_TEST_PLAN.trim()
+		if (XRAY_TEST_PLAN.equals('')) {
 			XRAY_TEST_PLAN = CONFIG['XRAY_TEST_PLAN'].trim()
 		}
+		echo "XRAY_TEST_PLAN : ${XRAY_TEST_PLAN}"
+		PARALLEL_EXECUTION = params.PARALLEL_EXECUTION
+		echo "PARALLEL_EXECUTION :${PARALLEL_EXECUTION}"
+		TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER']
+		if (CSPROJ != null) {
 
-		TEST_SUITES_FOLDER=CONFIG['TEST_SUITES_FOLDER']
-		echo "Test Results :${TEST_SUITES_FOLDER}"
-		PARALLEL_EXECUTION=params.PARALLEL_EXECUTION
-		echo "Parallel :${PARALLEL_EXECUTION}"
+		if (TEST_SUITES_FOLDER.equals('')) {
+			TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER'].trim()
+		}
+		echo "TEST_SUITES_FOLDER :${TEST_SUITES_FOLDER}"
+
+		RETRY_FAILED_TESTS = params.RETRY_FAILED_TESTS
+		if (RETRY_FAILED_TESTS) {
+			RETRY_COUNT = 1
+		}
+		echo "RETRY_COUNT :${RETRY_COUNT}"
+		}
 	}
 	autils = load "${CURRENT_DIR_PATH}/src/aws.groovy"
 
