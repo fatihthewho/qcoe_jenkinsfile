@@ -18,7 +18,7 @@ def XRAY_TEST_PLAN
 def TEST_SUITES_FOLDER
 
 def setupGrid() {
-	if(TEST_EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
+	if(TEST_EXECUTION_VM.equalsIgnoreCase('NA')){
 		HUB_URL="http://10.45.139.112:4444/"
 		if(PARALLEL_EXECUTION){
 			THREAD_COUNT=5
@@ -36,7 +36,7 @@ def setupGrid() {
 	echo "THREAD_COUNT : ${THREAD_COUNT}"
 }
 def shutdown() {
-	if(!TEST_EXECUTION_VM.equalsIgnoreCase('qcoe-grid')){
+	if(!TEST_EXECUTION_VM.equalsIgnoreCase('NA')){
 		def instanceId= autils.getInstanceID(TEST_EXECUTION_VM)
 		autils.stopAndWaitInstance(instanceId)
 	}
