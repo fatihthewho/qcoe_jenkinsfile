@@ -141,15 +141,15 @@ def updateXRayWithTestNG() {
 	}
 }
 def sendEmail(infraError) {
-	if ("${EMAIL_IDS}" != 'NA' ){
-		echo "${EMAIL_IDS}"
+	if ("${EMAIL_RECIPIENTS}" != 'NA' ){
+		echo "${EMAIL_RECIPIENTS}"
 		String mail = readFile "${CURRENT_DIR_PATH}/Templates/email-report.html"
 		for (element in TEST_SUMMARY){
 			mail = mail.replace(element.key, element.value)
 		}
 		def html = 'email-report_temp.html'
 		writeFile(file: "${html}", text: mail)
-		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_IDS}"""
+		emailext body:  readFile("${html}"), mimeType: 'text/html', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS', to: """${EMAIL_RECIPIENTS}"""
 		if(infraError) {
 		emailext body: readFile("${html}"), mimeType: 'text/html', subject: 'Setup Failures in $PROJECT_NAME # $BUILD_NUMBER ', to: """${QCOE_MAIL}"""
 		}
@@ -289,18 +289,18 @@ def initialize(fileId){
 		PARALLEL_EXECUTION = params.PARALLEL_EXECUTION
 		echo "PARALLEL_EXECUTION :${PARALLEL_EXECUTION}"
 		TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER']
-		if (CSPROJ != null) {
+		if (CSPROJ==null) {
 
-		if (TEST_SUITES_FOLDER.equals('')) {
-			TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER'].trim()
-		}
-		echo "TEST_SUITES_FOLDER :${TEST_SUITES_FOLDER}"
+			if (TEST_SUITES_FOLDER.equals('')) {
+				TEST_SUITES_FOLDER = CONFIG['TEST_SUITES_FOLDER'].trim()
+			}
+			echo "TEST_SUITES_FOLDER :${TEST_SUITES_FOLDER}"
 
 		RETRY_FAILED_TESTS = params.RETRY_FAILED_TESTS
-		if (RETRY_FAILED_TESTS) {
-			RETRY_COUNT = 1
-		}
-		echo "RETRY_COUNT :${RETRY_COUNT}"
+			if (RETRY_FAILED_TESTS) {
+				RETRY_COUNT = 1
+			}
+			echo "RETRY_COUNT :${RETRY_COUNT}"
 		}
 	}
 	autils = load "${CURRENT_DIR_PATH}/src/aws.groovy"

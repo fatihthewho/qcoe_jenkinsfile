@@ -79,6 +79,7 @@ try {
                 jutils.shutdown();
             }
             catch (Exception e){
+                println(e)
                 echo "=======Shutdown AWS Failed ===="
                 currentBuild.result = 'FAILURE'
                 infraError = true
@@ -91,6 +92,7 @@ try {
                 jutils.sendEmail(infraError)
             }
             catch (Exception e){
+                println(e)
                 echo "=======Sending Email Failed ===="
                 currentBuild.result = 'FAILURE'
             }
