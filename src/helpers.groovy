@@ -73,7 +73,7 @@ def executeNUnitTests(browser,testSelection) {
 
 }
 def executeMavenTests(browser, xmlFileName) {
-	bat "mvn test -Denv=${TEST_ENVIRONMENT} -DBrowser=${browser} -DgridUrl=${HUB_URL} -DthreadCount=${THREAD_COUNT} -Dretry=${RETRY_COUNT} -DsuiteFile=${xmlFileName}"
+	bat "mvn test -Denv=${TEST_ENVIRONMENT} -DBrowser=${browser} -DgridUrl=${HUB_URL} -DthreadCount=${THREAD_COUNT} -Dretry=${RETRY_COUNT} -DsuiteFile=${TEST_SUITES_FOLDER}/${xmlFileName}"
 }
 
 def archiveCSharpArtifacts(){
