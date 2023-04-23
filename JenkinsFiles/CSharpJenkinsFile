@@ -19,7 +19,7 @@ try {
                     stage('Checkout Repo') {
                         jutils.checkoutRepo()
                         echo "===project repo checkout completed ========"
-                        infraError =  false
+                        infraError = false
                     }
                     stage('Code Compile') {
                         jutils.compileCSharp("${env.WORKSPACE}")
@@ -27,7 +27,7 @@ try {
                     }
                     try {
                         stage('Execute Tests') {
-                             jutils.executeNUnitTests(params.TEST_SELECTION_CRITERIA)
+                            jutils.executeNUnitTests(params.TEST_SELECTION_CRITERIA)
                             echo "===Test completed ========"
                         }
                     }
@@ -41,7 +41,7 @@ try {
                             echo "=======Artifacts stage ===="
                             jutils.archiveCSharpArtifacts()
                             echo "=======Artifacts stage completed ===="
-                           }
+                        }
                     }
                     catch (Exception e) {
                         println(e)
@@ -76,9 +76,9 @@ try {
         stage('Cleanup') {
             try {
                 echo "=======Shutdown AWS Instance===="
-                jutils.shutdown();
+                jutils.shutdown()
             }
-            catch (Exception e){
+            catch (Exception e) {
                 println(e)
                 echo "=======Shutdown AWS Failed ===="
                 currentBuild.result = 'FAILURE'
@@ -91,7 +91,7 @@ try {
                 echo "=======EMail Stage ===="
                 jutils.sendEmail(infraError)
             }
-            catch (Exception e){
+            catch (Exception e) {
                 println(e)
                 echo "=======Sending Email Failed ===="
                 currentBuild.result = 'FAILURE'
@@ -108,10 +108,9 @@ def getCurrentDirectory() {
     temp = std.trim().replace("\n", "")
     echo "modified:${temp}"
     def modified = temp.replace('@tmp', '').trim()
-    if(modified.length()>0){
+    if (modified.length() > 0) {
         return modified
-    }
-    else{
+    } else {
         return current
     }
 }
