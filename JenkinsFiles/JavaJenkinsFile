@@ -8,7 +8,7 @@ try {
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
                     CURRENT_DIR_PATH = temp
-                    jutils.initialize(params['CONFIG_FILE_ID'])
+                    jutils.initialize(params['CONFIG_FILE_ID'].trim())
                     echo "=========Master Setup Completed========="
                 }
                 stage('Grid Setup') {
