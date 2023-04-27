@@ -8,6 +8,7 @@ try {
                     def temp = getCurrentDirectory()
                     jutils = load "${temp}/src/helpers.groovy"
                     CURRENT_DIR_PATH = temp
+                    echo "====Config File :: ${params['CONFIG_FILE_ID']}========="
                     jutils.initialize(params['CONFIG_FILE_ID'].trim())
                     echo "=========Master Setup Completed========="
                 }
