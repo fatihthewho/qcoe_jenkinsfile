@@ -73,7 +73,9 @@ def setProjectLocation(folder, project) {
 }
 
 def executeNUnitTests(testSelection) {
-
+    if(testSelection!=null){
+        testSelection =testSelection.trim();
+    }
     bat "nunit3-console ${PROJECT_LOCATION}${CSPROJ} --tp:env=${TEST_ENVIRONMENT} --tp:browser=${BROWSER} --tp:gridUrl=${HUB_URL} --workers=${THREAD_COUNT}  ${testSelection}"
 
 }
