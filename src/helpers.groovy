@@ -81,6 +81,7 @@ def executeNUnitTests(testSelection) {
 }
 
 def executeMavenTests(xmlFileName) {
+    xmlFileName = xmlFileName.trim()
     bat "mvn test -Denv=${TEST_ENVIRONMENT} -DBrowser=${BROWSER} -DgridUrl=${HUB_URL} -DthreadCount=${THREAD_COUNT} -Dretry=${RETRY_COUNT} -DsuiteFile=${TEST_SUITES_FOLDER}/${xmlFileName}"
 }
 
