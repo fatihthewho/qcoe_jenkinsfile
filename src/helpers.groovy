@@ -150,6 +150,15 @@ def updateXRayWithTestNG() {
 				}
 			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
         )
+        def testExecutionKey = xrayImportResult?.executionKey
+        if (testExecutionKey) {
+            echo "Test Execution Key: ${testExecutionKey}"
+            // Here, you can attach your test result to the test execution using the obtained testExecutionKey
+            // Call the method to attach the test result, passing the testExecutionKey and the test result file path
+            attachTestResultToExecution(testExecutionKey, "path/to/test/result.txt")
+        } else {
+            echo "Failed to obtain Test Execution Key"
+        }
     }
 }
 
