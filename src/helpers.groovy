@@ -136,31 +136,24 @@ def updateXRayWithNUnit() {
 def updateXRayWithTestNG() {
     echo "TestNG Test Results"
     testNG showFailedBuilds: true
-
     if ("${XRAY_TEST_PLAN}" != 'NA') {
         echo "${XRAY_TEST_PLAN}"
         step(
                 [$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: """{
-                "fields": {
-                    "project": {
-                        "key": "${XRAY_TEST_PLAN.split('-')[0]}"
-                    },
-                    "summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
-                    "issuetype": {
-                        "name": "Test Execution"
-                    }  
-                },
-                "xrayFields": {
-                    "testPlanKey": "${XRAY_TEST_PLAN}"
-                }
-            }""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
+			"fields": {
+				"project": {
+					"key": "${XRAY_TEST_PLAN.split('-')[0]}"
+				},
+				"summary": "Test Summary from Jenkins Build-${JOB_BASE_NAME}#${BUILD_NUMBER}", 
+				"issuetype": {
+				   "name": "Test Execution"
+				}  
+			},
+			"xrayFields": {
+					"testPlanKey": "${XRAY_TEST_PLAN}"
+				}
+			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
         )
-
-        def jsonResponse = new JsonSlurper().parseText(env.XRAY_RAW_RESPONSE)
-        def testExecutionKey = jsonResponse.key
-
-        println "TEST EXECUTION KEY THAT WAS JUST CREATED"
-        println testExecutionKey
     }
 }
 
