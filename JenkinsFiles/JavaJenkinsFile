@@ -55,6 +55,7 @@ try {
                             jutils.parseTestNGTestResults("${PROJECT_LOCATION}target/surefire-reports/testng-results.xml")
                             jutils.updateXRayWithTestNG()
                             jutils.extractFromLog()
+                            jutils.extractFromLog2()
                         }
                     }
                     catch (Exception e) {

@@ -158,7 +158,15 @@ def updateXRayWithTestNG() {
 }
 
 def extractFromLog() {
-    def logContent = currentBuild.getLog(1000).join('\n')
+   def logContent = currentBuild.logFile.text
+    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
+    echo testExecs
+}
+
+def extractFromLog2() {
+    def logFilePath = "${CURRENT_DIR_PATH}/log.txt"
+    sh "cat ${env.BUILD_LOG} > ${logFilePath}"
+    def logContent = readFile(file: logFilePath)
     env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
     echo env.testExecs
 }
