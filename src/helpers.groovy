@@ -1,6 +1,3 @@
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-
 // not working with def
 TEST_SUMMARY = [:]
 THREAD_COUNT = 1
@@ -158,9 +155,10 @@ def updateXRayWithTestNG() {
 }
 
 def extractFromLog() {
-   def logContent = currentBuild.logFile.text
+    def logFilePath = "${env.BUILD_LOG_PATH}"
+    def logContent = readFile(logFilePath)
     env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
-    echo testExecs
+    echo env.testExecs
 }
 
 
