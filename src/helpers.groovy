@@ -1,3 +1,4 @@
+import groovy.json.JsonOutput
 // not working with def
 TEST_SUMMARY = [:]
 THREAD_COUNT = 1
