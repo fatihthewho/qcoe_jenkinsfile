@@ -154,7 +154,7 @@ def updateXRayWithTestNG() {
         echo" TEST EXCETUION KEY THAT WAS JUST CREATED"
         echo "${xrayImportResult}"
         echo xrayImportResult
-        echo JsonOutput.toJson(xrayImportResult)
+        println  JsonOutput.toJson(xrayImportResult)
     }
 }
 
