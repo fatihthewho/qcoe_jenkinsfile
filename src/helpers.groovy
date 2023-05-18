@@ -158,7 +158,7 @@ def updateXRayWithTestNG() {
 }
 
 def extractFromLog() {
-    def logContent = currentBuild.rawBuild.getLog(1000).join('\n')
+    def logContent = currentBuild.getLog(1000).join('\n')
     env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
     echo env.testExecs
 }
