@@ -163,14 +163,6 @@ def extractFromLog() {
     echo testExecs
 }
 
-def extractFromLog2() {
-    def logFilePath = "${CURRENT_DIR_PATH}/log.txt"
-    sh "cat ${env.BUILD_LOG} > ${logFilePath}"
-    def logContent = readFile(file: logFilePath)
-    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
-    echo env.testExecs
-}
-
 
 def sendEmail(infraError) {
     if ("${EMAIL_RECIPIENTS}" != 'NA') {

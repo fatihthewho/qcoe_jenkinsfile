@@ -54,13 +54,21 @@ try {
                             echo "===Parsing NUit Results====="
                             jutils.parseTestNGTestResults("${PROJECT_LOCATION}target/surefire-reports/testng-results.xml")
                             jutils.updateXRayWithTestNG()
-                            jutils.extractFromLog()
+
                         }
                     }
                     catch (Exception e) {
                         println(e)
                         echo "=======XRay stage completed With Error===="
                         status = false
+                    }
+                    try{
+                    stage('Read Log File'){
+                    jutils.extractFromLog()
+                    }
+                    } catch(Exception e){
+                    println(e)
+                    echo "=====Read Log File Completed with error====="
                     }
 
                 }
