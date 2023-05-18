@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 // not working with def
 TEST_SUMMARY = [:]
 THREAD_COUNT = 1
@@ -150,7 +152,7 @@ def updateXRayWithTestNG() {
 				}
 			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
         )
-        def testExecutionKey = xrayImportResult?.executionKey
+        def testExecutionKey = extractTestExecutionKey(xrayImportResult)
         if (testExecutionKey) {
             echo "Test Execution Key: ${testExecutionKey}"
             // Here, you can attach your test result to the test execution using the obtained testExecutionKey
@@ -160,6 +162,11 @@ def updateXRayWithTestNG() {
             echo "Failed to obtain Test Execution Key"
         }
     }
+}
+
+def extractTestExecutionKey(xrayImportResult) {
+    def jsonResponse = new JsonSlurper().parseText(xrayImportResult.XRAY_RAW_RESPONSE)
+    return jsonResponse?.key
 }
 
 def sendEmail(infraError) {
