@@ -157,6 +157,13 @@ def updateXRayWithTestNG() {
     }
 }
 
+def extractFromLog(){
+    def logContent = Jenkins.getInstance().getItemByFullName(env.JOB_NAME).getBuildByNumber(Integer.parseInt(env.BUILD_NUMBER)).logFile.text
+    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
+    echo env.testExecs
+}
+
+
 def sendEmail(infraError) {
     if ("${EMAIL_RECIPIENTS}" != 'NA') {
         echo "${EMAIL_RECIPIENTS}"

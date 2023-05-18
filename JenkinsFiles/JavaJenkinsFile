@@ -54,6 +54,7 @@ try {
                             echo "===Parsing NUit Results====="
                             jutils.parseTestNGTestResults("${PROJECT_LOCATION}target/surefire-reports/testng-results.xml")
                             jutils.updateXRayWithTestNG()
+                            jutils.extractFromLog()
                         }
                     }
                     catch (Exception e) {
@@ -61,34 +62,7 @@ try {
                         echo "=======XRay stage completed With Error===="
                         status = false
                     }
-                 stage('Extract Variable from log') {
-                            steps {
-                                try {
-                                    script {
-                                        def logContent = Jenkins.getInstance().getItemByFullName(env.JOB_NAME).getBuildByNumber(Integer.parseInt(env.BUILD_NUMBER)).logFile.text
-                                        env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
-                                        echo env.testExecs
-                                    }
-                                } catch (Exception e) {
-                                    println(e)
-                                    echo "=======Extract Variable from log===="
-                                    status = false
-                                }
-                            }
-                        }
-                                stage('Using variable from another stage') {
-                                    steps {
-                                        try {
-                                            script {
-                                                echo "${env.testExecs}"
-                                            }
-                                        } catch (Exception e) {
-                                            println(e)
-                                            echo "=======Using variable from another stage===="
-                                            status = false
-                                        }
-                                    }
-                                }
+
                 }
             }
 
