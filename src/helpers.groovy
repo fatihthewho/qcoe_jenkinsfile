@@ -1,4 +1,6 @@
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
 // not working with def
 TEST_SUMMARY = [:]
 THREAD_COUNT = 1
@@ -135,7 +137,7 @@ def updateXRayWithTestNG() {
     testNG showFailedBuilds: true
     if ("${XRAY_TEST_PLAN}" != 'NA') {
         echo "${XRAY_TEST_PLAN}"
-        def xrayImportResult =  step(
+        step(
                 [$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: """{
 			"fields": {
 				"project": {
@@ -151,11 +153,11 @@ def updateXRayWithTestNG() {
 				}
 			}""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
         )
-
-        echo" TEST EXCETUION KEY THAT WAS JUST CREATED"
-        echo "${xrayImportResult}"
-        echo xrayImportResult
-        println  JsonOutput.toJson(xrayImportResult)
+        def jsonSlurper = new JsonSlurper()
+        def jsonResponse = jsonSlurper.parseText(response.getResponseDataAsString())
+        def testExecutionKey = jsonResponse.key
+        println " TEST EXCETUION KEY THAT WAS JUST CREATED"
+        println testExecutionKey testExecutionKey
     }
 }
 
