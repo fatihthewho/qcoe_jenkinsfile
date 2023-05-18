@@ -132,13 +132,14 @@ def updateXRayWithNUnit() {
     }
 }
 
+
 def updateXRayWithTestNG() {
     echo "TestNG Test Results"
     testNG showFailedBuilds: true
 
     if ("${XRAY_TEST_PLAN}" != 'NA') {
         echo "${XRAY_TEST_PLAN}"
-        def xrayImportResult = step(
+        step(
                 [$class: 'XrayImportBuilder', endpointName: '/testng/multipart', importFilePath: '**/testng-results.xml', importInParallel: 'false', importInfo: """{
                 "fields": {
                     "project": {
@@ -152,10 +153,10 @@ def updateXRayWithTestNG() {
                 "xrayFields": {
                     "testPlanKey": "${XRAY_TEST_PLAN}"
                 }
-            }""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55', returnStdout: true]
+            }""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
         )
 
-        def jsonResponse = new JsonSlurper().parseText(xrayImportResult.XRAY_RAW_RESPONSE)
+        def jsonResponse = new JsonSlurper().parseText(env.XRAY_RAW_RESPONSE)
         def testExecutionKey = jsonResponse.key
 
         println "TEST EXECUTION KEY THAT WAS JUST CREATED"
