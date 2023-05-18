@@ -165,8 +165,8 @@ def updateXRayWithTestNG() {
                 } else {
                     echo "Failed to obtain Test Execution Key"
                 }
-            } else {
-                echo "Failed to import TestNG XML results"
+            } else if(xrayImportResult==null){
+                echo "xray import result empty"
             }
         }
     }
