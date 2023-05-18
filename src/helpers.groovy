@@ -156,21 +156,28 @@ def updateXRayWithTestNG() {
                 }""", importToSameExecution: 'false', inputInfoSwitcher: 'fileContent', inputTestInfoSwitcher: 'filePath', serverInstance: 'CLOUD-4d5d4a26-3cb7-4838-a9ff-1b25e9f1cf55']
             )
 
-            def testExecutionKey = extractTestExecutionKey(xrayImportResult)
-            if (testExecutionKey) {
-                echo "Test Execution Key: ${testExecutionKey}"
-                // Here, you can attach your test result to the test execution using the obtained testExecutionKey
-                attachTestResultToExecution(testExecutionKey, "path/to/test/result.txt")
+            if (xrayImportResult) {
+                def testExecutionKey = extractTestExecutionKey(xrayImportResult)
+                if (testExecutionKey) {
+                    echo "Test Execution Key: ${testExecutionKey}"
+                    // Here, you can attach your test result to the test execution using the obtained testExecutionKey
+                    attachTestResultToExecution(testExecutionKey, "path/to/test/result.txt")
+                } else {
+                    echo "Failed to obtain Test Execution Key"
+                }
             } else {
-                echo "Failed to obtain Test Execution Key"
+                echo "Failed to import TestNG XML results"
             }
         }
     }
 }
 
 def extractTestExecutionKey(xrayImportResult) {
-    def jsonResponse = new JsonSlurper().parseText(xrayImportResult.XRAY_RAW_RESPONSE)
-    return jsonResponse?.key
+    if (xrayImportResult?.XRAY_RAW_RESPONSE) {
+        def jsonResponse = new JsonSlurper().parseText(xrayImportResult.XRAY_RAW_RESPONSE)
+        return jsonResponse?.key
+    }
+    return null
 }
 
 def sendEmail(infraError) {
