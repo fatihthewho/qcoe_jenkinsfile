@@ -167,16 +167,18 @@ def extractFromLog() {
 
 def retrieveFiles(){
     def logDirectoryPath = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}"
-    def logDirectory = new File(logDirectoryPath)
-
-    if (logDirectory.exists() && logDirectory.isDirectory()) {
-        def files = logDirectory.listFiles()
+    if (fileExists(logDirectoryPath)) {
+        def logDirectory = readFile(logDirectoryPath).trim()
+        def files = sh(
+                script: "ls -1 ${logDirectory}",
+                returnStdout: true
+        ).trim().split("\n")
 
         files.each { file ->
-            println file.name
+            println file
         }
     } else {
-        println "Log directory does not exist or is not a directory."
+        println "Log directory does not exist."
     }
 
 
