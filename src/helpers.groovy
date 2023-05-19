@@ -165,6 +165,13 @@ def extractFromLog() {
     echo env.testExecs
 }
 
+def extractFromLog1() {
+    def logContent = currentBuild.logFile.text
+    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
+    echo env.testExecs
+}
+
+
 def retrieveFiles(){
     def logDirectoryPath = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}"
     if (fileExists(logDirectoryPath)) {
