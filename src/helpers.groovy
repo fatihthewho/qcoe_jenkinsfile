@@ -185,10 +185,11 @@ def retrieveFiles(){
 
 }
 
+
 def retrieveAndPrintTestExecs() {
-    def jenkinsUrl = System.getenv('JENKINS_URL')
-    def buildName = System.getenv('BUILD_NAME')
-    def buildNumber = System.getenv('BUILD_NUMBER')
+    def jenkinsUrl = env.JENKINS_URL
+    def buildName = env.BUILD_NAME
+    def buildNumber = env.BUILD_NUMBER
 
     // Retrieve the consoleText
     def consoleTextUrl = "${jenkinsUrl}/job/${buildName}/${buildNumber}/consoleText"
