@@ -133,7 +133,7 @@ def updateXRayWithNUnit() {
     }
 }
 
-
+env.JOB_URL
 def updateXRayWithTestNG() {
     echo "TestNG Test Results"
     testNG showFailedBuilds: true
