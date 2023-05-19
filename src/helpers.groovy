@@ -179,6 +179,7 @@ def retrieveFiles(){
         }
     } else {
         println "Log directory does not exist."
+        echo logDirectoryPath
     }
 
 

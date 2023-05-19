@@ -64,13 +64,7 @@ try {
                     }
                     try{
                     stage('Read Log File'){
-                    steps{
-                    script{
-                    def logDirectoryPath = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/log"
-                    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
-                    echo testExecs
-                    }
-                    }
+                    jutils.retrieveFiles()
                     }
                     } catch(Exception e){
                     println(e)
