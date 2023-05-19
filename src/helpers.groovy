@@ -133,7 +133,6 @@ def updateXRayWithNUnit() {
     }
 }
 
-env.JOB_URL
 def updateXRayWithTestNG() {
     echo "TestNG Test Results"
     testNG showFailedBuilds: true
@@ -179,15 +178,12 @@ def extractFromLog2() {
 
 def extractFromLog3(){
     echo "------ LOG -------"
-    def jenkinsHome = env.JENKINS_HOME
-    def jobName = env.JOB_NAME
-    def buildNumber = env.BUILD_NUMBER
-    def logFilePath = "${jenkinsHome}/jobs/${jobName}/builds/${buildNumber}/log"
-
-    echo "JENKINS_HOME: ${jenkinsHome}"
-    echo "JOB_NAME: ${jobName}"
-    echo "BUILD_NUMBER: ${buildNumber}"
-    echo "Log File Path: ${logFilePath}"
+//    def jenkinsHome = env.JENKINS_HOME
+//    def jobName = env.JOB_NAME
+//    def buildNumber = env.BUILD_NUMBER
+//    def logFilePath = "${jenkinsHome}/jobs/${jobName}/builds/${buildNumber}/log"
+//
+    def logFilePath = "C:/ProgramData/Jenkins/.jenkins/jobs/QCOE/Selenium_Java/Java_Pipeline_Fatih/builds/57/log"
 
     if (fileExists(logFilePath)) {
         echo "Log File exists"
