@@ -177,6 +177,29 @@ def extractFromLog2() {
     echo env.testExecs
 }
 
+def extractFromLog3(){
+    def jenkinsHome = env.JENKINS_HOME
+    def jobName = env.JOB_NAME
+    def buildNumber = env.BUILD_NUMBER
+    def logFilePath = "${jenkinsHome}/jobs/${jobName}/builds/${buildNumber}/log"
+
+    echo "JENKINS_HOME: ${jenkinsHome}"
+    echo "JOB_NAME: ${jobName}"
+    echo "BUILD_NUMBER: ${buildNumber}"
+    echo "Log File Path: ${logFilePath}"
+
+    if (fileExists(logFilePath)) {
+        echo "Log File exists"
+        def logContent = readFile(logFilePath)
+        echo "Log Content:"
+        echo logContent
+        env.jobName = (logContent =~ /"JOB_NAME:.*/).findAll().first()
+        echo jobName
+    } else {
+        echo "Log File does not exist"
+    }
+}
+
 
 def retrieveFiles(){
     def logDirectoryPath = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}"
