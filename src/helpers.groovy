@@ -155,11 +155,16 @@ def updateXRayWithTestNG() {
 }
 
 def extractFromLog() {
-    def logFile = currentBuild.getLogFile()
-    def logContent = logFile.text
-    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
-    echo env.testExecs
+    def logFilePath = currentBuild.getLogFile().getAbsolutePath()
+    if (logFilePath) {
+        def logContent = readFile(logFilePath)
+        env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
+        echo env.testExecs
+    } else {
+        echo "Build log file path is not available"
+    }
 }
+
 
 
 def sendEmail(infraError) {
