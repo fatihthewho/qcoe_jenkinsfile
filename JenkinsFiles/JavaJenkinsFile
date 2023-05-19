@@ -64,7 +64,7 @@ try {
                     }
                     try{
                     stage('Read Log File'){
-                    jutils.extractFromLog()
+                    jutils.retrieveFiles()
                     }
                     } catch(Exception e){
                     println(e)
