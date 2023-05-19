@@ -166,7 +166,7 @@ def extractFromLog() {
 }
 
 def retrieveFiles(){
-    def logDirectory = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/log"
+    def logDirectory = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}"
 
     try {
         Path directoryPath = Paths.get(logDirectory)
