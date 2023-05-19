@@ -1,5 +1,6 @@
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 // not working with def
 TEST_SUMMARY = [:]
@@ -164,6 +165,24 @@ def extractFromLog() {
     echo env.testExecs
 }
 
+def retrieveFiles(){
+    def logDirectory = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/log"
+
+    try {
+        Path directoryPath = Paths.get(logDirectory)
+        if (Files.exists(directoryPath) && Files.isDirectory(directoryPath)) {
+            def files = Files.list(directoryPath).map { it.getFileName().toString() }
+            files.each { fileName ->
+                println(fileName)
+            }
+        } else {
+            println("Log directory does not exist or is not a directory.")
+        }
+    } catch (Exception e) {
+        println("Error occurred: ${e.getMessage()}")
+    }
+
+}
 
 def sendEmail(infraError) {
     if ("${EMAIL_RECIPIENTS}" != 'NA') {
