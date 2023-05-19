@@ -157,6 +157,37 @@ def updateXRayWithTestNG() {
     }
 }
 
+def extractFromLogNew(){
+
+    echo "------ LOG -------"
+    def jenkinsHome = env.JENKINS_HOME
+    def jobName = env.JOB_NAME
+    def buildNumber = env.BUILD_NUMBER
+    // def logFilePath = "${jenkinsHome}/jobs/${jobName}/builds/${buildNumber}/log"
+    def logFilePath = "C:/Users/Fatih.Zorlu/.jenkins/jobs/PipelineJenkinsJob/builds/24/log"
+
+    echo "JENKINS_HOME: ${jenkinsHome}"
+    echo "JOB_NAME: ${jobName}"
+    echo "BUILD_NUMBER: ${buildNumber}"
+    echo "Log File Path: ${logFilePath}"
+
+    if (fileExists(logFilePath)) {
+        echo "Log File exists"
+        def logContent = readFile(logFilePath)
+        def lines = logContent.tokenize('\n')
+        def xrayTestExecsLine = lines.find { it.startsWith('XRAY_TEST_EXECS:') }
+        if (xrayTestExecsLine) {
+            def testExecs = xrayTestExecsLine - 'XRAY_TEST_EXECS:'
+            echo "XRAY_TEST_EXECS: ${testExecs.trim()}"
+        } else {
+            echo "XRAY_TEST_EXECS not found in the log"
+        }
+    } else {
+        echo "Log File does not exist"
+    }
+
+}
+
 def extractFromLog() {
     def logFilePath = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/log"
     def logContent = readFile(logFilePath)
@@ -183,7 +214,7 @@ def extractFromLog3(){
 //    def buildNumber = env.BUILD_NUMBER
 //    def logFilePath = "${jenkinsHome}/jobs/${jobName}/builds/${buildNumber}/log"
 //
-    def logFilePath = "C:/ProgramData/Jenkins/.jenkins/jobs/QCOE/Selenium_Java/Java_Pipeline_Fatih/builds/57/log"
+    def logFilePath = "C:/ProgramData/Jenkins/.jenkins/jobs/QCOE/Selenium_Java/Java_Pipeline_Fatih/builds/58/log"
 
     if (fileExists(logFilePath)) {
         echo "Log File exists"
