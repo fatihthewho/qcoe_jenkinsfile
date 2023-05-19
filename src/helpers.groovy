@@ -1,3 +1,6 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
 // not working with def
 TEST_SUMMARY = [:]
 THREAD_COUNT = 1
@@ -155,16 +158,11 @@ def updateXRayWithTestNG() {
 }
 
 def extractFromLog() {
-    def logFilePath = currentBuild.getLogFile().getAbsolutePath()
-    if (logFilePath) {
-        def logContent = readFile(logFilePath)
-        env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
-        echo env.testExecs
-    } else {
-        echo "Build log file path is not available"
-    }
+    def logFilePath = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/log"
+    def logContent = readFile(logFilePath)
+    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
+    echo env.testExecs
 }
-
 
 
 def sendEmail(infraError) {
