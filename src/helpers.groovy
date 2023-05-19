@@ -170,7 +170,12 @@ def extractFromLog1() {
     env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
     echo env.testExecs
 }
-
+def extractFromLog2() {
+    def logFile = currentBuild.getLogFile()
+    def logContent = logFile.text
+    env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
+    echo env.testExecs
+}
 
 
 def retrieveFiles(){
