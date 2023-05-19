@@ -166,10 +166,11 @@ def extractFromLog() {
 }
 
 def extractFromLog1() {
-    def logContent = currentBuild.getRawBuild().getLog(1000).join('\n')
+    def logContent = readFile("${env.BUILD_LOG_PATH}")
     env.testExecs = (logContent =~ /XRAY_TEST_EXECS:.*/).findAll().first()
     echo env.testExecs
 }
+
 
 
 def retrieveFiles(){
