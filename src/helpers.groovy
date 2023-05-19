@@ -185,6 +185,23 @@ def retrieveFiles(){
 
 }
 
+def retrieveAndPrintTestExecs() {
+    def jenkinsUrl = System.getenv('JENKINS_URL')
+    def buildName = System.getenv('BUILD_NAME')
+    def buildNumber = System.getenv('BUILD_NUMBER')
+
+    // Retrieve the consoleText
+    def consoleTextUrl = "${jenkinsUrl}/job/${buildName}/${buildNumber}/consoleText"
+    def consoleText = new URL(consoleTextUrl).text
+
+    // Search for the desired pattern and extract the value
+    def pattern = /XRAY_TEST_EXECS:(.*)/
+    def testExecs = (consoleText =~ pattern).findAll().first()?.group(1)
+
+    // Print the value to the console
+    echo "XRAY_TEST_EXECS: ${testExecs}"
+}
+
 def sendEmail(infraError) {
     if ("${EMAIL_RECIPIENTS}" != 'NA') {
         echo "${EMAIL_RECIPIENTS}"
