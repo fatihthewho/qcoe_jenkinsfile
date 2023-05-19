@@ -178,6 +178,7 @@ def extractFromLog2() {
 }
 
 def extractFromLog3(){
+    echo "------ LOG -------"
     def jenkinsHome = env.JENKINS_HOME
     def jobName = env.JOB_NAME
     def buildNumber = env.BUILD_NUMBER
@@ -193,8 +194,15 @@ def extractFromLog3(){
         def logContent = readFile(logFilePath)
         echo "Log Content:"
         echo logContent
-        env.jobName = (logContent =~ /"JOB_NAME:.*/).findAll().first()
-        echo jobName
+
+        def pattern = /XRAY_TEST_EXECS:.*\n/
+        def matcher = (logContent =~ pattern)
+        if (matcher.find()) {
+            def testExecs = matcher.group().replace("XRAY_TEST_EXECS:", "").trim()
+            echo "XRAY_TEST_EXECS: ${testExecs}"
+        } else {
+            echo "XRAY_TEST_EXECS not found in the log"
+        }
     } else {
         echo "Log File does not exist"
     }
